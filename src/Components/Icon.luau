@@ -6,7 +6,7 @@
 local MaterialRoblox = script.Parent.Parent;
 
 local Fusion = require(MaterialRoblox.Parent.Fusion);
-local Icons = require(MaterialRoblox.Utils.Icons);
+local Icons = require(MaterialRoblox.Parent['material-symbols-roblox']);
 
 local function Icon(
 	scope: Fusion.Scope,

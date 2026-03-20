@@ -6,19 +6,21 @@
 local MaterialRoblox = script.Parent.Parent;
 
 local Theming = require(MaterialRoblox.Utils.Theming);
+local InternalTokens = require(MaterialRoblox.Tokens._internal.dialogs);
 
 local function getTokens()
 	local theme = Theming:now();
+    local tokens = InternalTokens(theme);
 
 	return {
-		scrimColor = Color3.new(0, 0, 0),
-		scrimTransparency = 1 - .32,
-		containerColor = theme.color.surfaceContainerHigh,
-		cornerRadius = UDim.new(0, 28),
-		headlineText = theme.typography.headline.small,
-		bodyText = theme.typography.body.large,
-		headlineColor = theme.color.onSurface,
-		bodyColor = theme.color.onSurfaceVariant
+        scrim = theme.color.scrim,
+        scrimTransparency = 1 - .32,
+        containerColor = tokens.container.color,
+        cornerRadius = theme.shape.cornerExtraLarge,
+        headlineText = tokens.headline,
+        bodyText = tokens.subhead,
+        headlineColor = tokens.headline.color,
+        bodyColor = tokens.subhead.color
 	}
 end
 

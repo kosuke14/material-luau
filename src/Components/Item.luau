@@ -19,14 +19,20 @@ local function Item(
     props: {
         icon: string?,
         label: string,
+        fullWidth: boolean?,
         trailing: string?,
-        onClick: () -> ()?
+        onClick: () -> ()?,
+        leading: Instance?
     }
 )
     local Tokens = ItemTokens();
 
+    print(Tokens)
+
+    print(Tokens.labelFont.fontSize)
+
     return scope:New("ImageButton") {
-        Size = UDim2.new(0, 0, 0, 48),
+        Size = UDim2.new(props.fullWidth and 1 or 0, 0, 0, Tokens.height),
         ImageTransparency = 1,
         BackgroundTransparency = 1,
         AutomaticSize = Enum.AutomaticSize.X,
@@ -61,6 +67,12 @@ local function Item(
                         })
                     end),
 
+                    showComputed(scope, props.leading, function()
+                        return scope:Hydrate(props.leading) {
+                            ImageColor3 = Tokens.leadingColor
+                        }
+                    end),
+
                     scope:New("TextLabel") {
                         Size = UDim2.fromScale(0, 1);
                         TextXAlignment = Enum.TextXAlignment.Left,
@@ -68,7 +80,7 @@ local function Item(
                         AutomaticSize = Enum.AutomaticSize.X,
                         Text = props.label,
                         FontFace = Tokens.labelFont.font,
-                        TextSize = Tokens.labelFont.fontSize,
+                        TextSize = Tokens.labelFont.size,
                         TextColor3 = Tokens.labelColor,
 
                         [Children] = {
@@ -85,7 +97,7 @@ local function Item(
                             BackgroundTransparency = 1,
                             FontFace = Tokens.labelFont.font,
                             TextSize = Tokens.labelFont.fontSize,
-                            TextColor3 = Tokens.trailingLabelColor,
+                            TextColor3 = Tokens.trailingColor,
                             Text = props.trailing
                         }
                     end)

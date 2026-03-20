@@ -1,5 +1,9 @@
 --!strict
 
+local MaterialRoblox = script.Parent.Parent;
+
+local Fusion = require(MaterialRoblox.Parent.Fusion);
+
 local function getPaletteFromTheme(
     theme,
     mode: "light" | "dark"
@@ -7,19 +11,28 @@ local function getPaletteFromTheme(
     return theme.schemes[mode].props
 end
 
-local function getPaletteFromThemeState(
+local function _VERY_UNSAFE_getPaletteFromThemeState(
     scope,
     theme,
-    mode: "light" | "dark"
+    mode: Fusion.Value<"light" | "dark">
 )
-    return scope:Computed(function(
-        use
-    )
-        return getPaletteFromTheme(theme, use(mode));
-    end)
+    local initialTheme = theme.schemes[Fusion.peek(mode)].props;
+    local themeState = {};
+
+    for key, _ in initialTheme do
+        themeState[key] = scope:Computed(function(
+            use
+        )
+            return theme.schemes[use(mode)].props[key];
+        end)
+    end
+
+    print(themeState)
+
+    return themeState
 end
 
 return {
     getPaletteFromTheme = getPaletteFromTheme,
-    getPaletteFromThemeState = getPaletteFromThemeState,
+    _VERY_UNSAFE_getPaletteFromThemeState = _VERY_UNSAFE_getPaletteFromThemeState,
 }

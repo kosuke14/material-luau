@@ -6,7 +6,7 @@
 local MaterialRoblox = script.Parent.Parent;
 
 local DialogTokens = require(MaterialRoblox.Tokens.Dialog);
-local TextButton = require(MaterialRoblox.Components.TextButton);
+local TextButton = require(MaterialRoblox.Components.Button.TextButton);
 local Fusion = require(MaterialRoblox.Parent.Fusion);
 local Display = require(MaterialRoblox.Utils.Display);
 local Fade = require(MaterialRoblox.Utils.Fade);
@@ -19,7 +19,7 @@ local function DialogElement(
 	scope: Fusion.Scope,
 	props: {
 		headline: Fusion.UsedAs<string>,
-		body: Fusion.UsedAs<string>?,
+		[typeof(Fusion.Children)]: {}?,
 		buttons: Fusion.UsedAs<{
 			{ 
 				label: string,
@@ -32,10 +32,12 @@ local function DialogElement(
 	local Tokens = DialogTokens();
 	
 	local screenWidth = scope:Value(Display.getDisplayWidth());
+	local screenHeight = scope:Value(Display.getDisplayHeight());
 	local currentGui: Fusion.Value<Frame | nil> = scope:Value(nil)
 	
 	table.insert(scope, Display.onDisplayChange(function()
 		screenWidth:set(Display.getDisplayWidth());
+		screenHeight:set(Display.getDisplayHeight());
 	end));
 	
 	--Run after GUI has been defined
@@ -53,7 +55,8 @@ local function DialogElement(
 	return scope:New("Frame") {
 		Name = "Scrim",
 		Size = UDim2.fromScale(1, 1),
-		BackgroundColor3 = Tokens.scrimColor,
+		ZIndex = 999,
+		BackgroundColor3 = Tokens.scrim,
 		BackgroundTransparency = scope:Tween(
 			scope:Computed(function(
 				use: Fusion.Use
@@ -92,17 +95,14 @@ local function DialogElement(
 					},
 
 					scope:New("UIScale") {
-						Scale = scope:Tween(
+						Scale = scope:Spring(
 							scope:Computed(function(
 								use: Fusion.Use
 							)
 								return if use(props.open) then 1 else .8
 							end),
-							TweenInfo.new(
-								.3, 
-								Enum.EasingStyle.Exponential, 
-								Enum.EasingDirection.Out
-							)
+							25,
+							1
 						)
 					},
 
@@ -136,25 +136,13 @@ local function DialogElement(
 						TextXAlignment = Enum.TextXAlignment.Left,
 						Text = props.headline,
 						FontFace = Tokens.headlineText.font,
-						TextSize = Tokens.headlineText.fontSize,
+						TextSize = Tokens.headlineText.size,
 						TextColor3 = Tokens.headlineColor,
 						TextWrapped = true,
 						LayoutOrder = 0
 					},
 
-					scope:New("TextLabel") {
-						BackgroundTransparency = 1,
-						Size = UDim2.new(1, -8, 0, 0),
-						TextXAlignment = Enum.TextXAlignment.Left,
-						AutomaticSize = Enum.AutomaticSize.Y,
-						Text = props.body,
-						FontFace = Tokens.bodyText.font,
-						TextSize = Tokens.bodyText.fontSize,
-						TextColor3 = Tokens.bodyColor,
-						TextWrapped = true,
-						TextTruncate = Enum.TextTruncate.AtEnd,
-						LayoutOrder = 1
-					},
+					props[Children],
 
 					scope:New("Frame") {
 						BackgroundTransparency = 1,
@@ -168,20 +156,22 @@ local function DialogElement(
 								HorizontalAlignment = Enum.HorizontalAlignment.Right
 							},
 
-							scope:ForValues(props.buttons, function(
-								use: Fusion.Use,
-								scope: Fusion.Scope,
-								button: {
-									label: string,
-									onClick: () -> ()
-								}
-							)
-								return TextButton(scope, {
-									variant = "text",
-									text = button.label,
-									onClick = button.onClick
-								})
-							end)
+							showComputed(scope, props.open, function()
+								return scope:ForValues(props.buttons, function(
+									use: Fusion.Use,
+									scope: Fusion.Scope,
+									button: {
+										label: string,
+										onClick: () -> ()
+									}
+								)
+									return TextButton(scope, {
+										variant = "text",
+										text = button.label,
+										onClick = button.onClick
+									})
+								end)
+							end),
 						}
 					}
 				}

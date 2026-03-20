@@ -11,9 +11,7 @@ local dialogOpen = Scope:Value(false);
 local bannerOpen = Scope:Value(false);
 local sideSheetOpen = Scope:Value(false);
 
-local ThemedTextButton = MaterialRoblox.Utils.ProvideMaterial({
-	color = MaterialRoblox.Utils.MaterialColorUtilities.default:light(Color3.fromHex("#008000"))
-}, MaterialRoblox.Components.TextButton);
+local ThemedTextButton = MaterialRoblox.Components.TextButton;
 
 local Example = Scope:New("ScrollingFrame") {
 	Parent = ScreenGui,

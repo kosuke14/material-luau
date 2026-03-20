@@ -14,12 +14,20 @@ local Children = Fusion.Children;
 local OnEvent = Fusion.OnEvent;
 
 local SCREEN_INSET = 16;
-local MENU_TOTAL_VERTICAL_PADDING = 16;
+local MENU_TOTAL_VERTICAL_PADDING = 0;
+local MENU_WIDTH = 112;
+
+local FLIP_POSITIONS = {
+    ["UP_LEFT"] = Vector2.new(0, 1),
+    ["UP_RIGHT"] = Vector2.new(1, 1),
+    ["DOWN_LEFT"] = Vector2.new(0, 0),
+    ["DOWN_RIGHT"] = Vector2.new(1, 0),
+}
 
 local function getTargetPosition(
     attachTo: GuiButton,
     targetHeight: number
-): ("up" | "down", Vector2)
+): (Vector2, Vector2)
     local absolutePosition = attachTo.AbsolutePosition;
     local absoluteSize = attachTo.AbsoluteSize;
 
@@ -27,15 +35,36 @@ local function getTargetPosition(
 
     local maxHeight = screen.Y - SCREEN_INSET;
 
-    local X = math.max(SCREEN_INSET, math.min(screen.X - SCREEN_INSET, absolutePosition.X))
+    local X, Y;
+
+    local flipLeftX = math.max(SCREEN_INSET, math.min(screen.X - SCREEN_INSET, absolutePosition.X));
+    local flipRightX = math.max(SCREEN_INSET, math.min(screen.X - SCREEN_INSET, absolutePosition.X + absoluteSize.X));
     local flipDownY = math.max(SCREEN_INSET, math.min(screen.Y - SCREEN_INSET, absolutePosition.Y + absoluteSize.Y));
     local flipUpY = math.max(SCREEN_INSET, math.min(screen.Y - SCREEN_INSET, absolutePosition.Y));
 
-    if flipDownY + SCREEN_INSET + targetHeight > maxHeight then
-        return "up", Vector2.new(X, flipUpY)
+    local shouldFlipXRight = flipLeftX + MENU_WIDTH + SCREEN_INSET > screen.X;
+    local shouldFlipYUp = flipDownY + SCREEN_INSET + targetHeight > maxHeight;
+
+    local X, Y;
+    local position;
+
+    if shouldFlipYUp then
+        Y = flipUpY;
+        position = "UP_";
     else
-        return "down", Vector2.new(X, flipDownY)
+        Y = flipDownY;
+        position = "DOWN_"
     end
+
+    if shouldFlipXRight then
+        X = flipRightX;
+        position ..=  "RIGHT";
+    else
+        X = flipLeftX;
+        position ..= "LEFT";
+    end
+
+    return FLIP_POSITIONS[position], Vector2.new(X, Y);
 end
 
 local function Menu(
@@ -62,13 +91,13 @@ local function Menu(
             height += child.AbsoluteSize.Y
         end
 
-        return height + MENU_TOTAL_VERTICAL_PADDING
+        return height + (2 * Tokens.verticalPadding.Offset)
     end);
 
     local menuSize = scope:Computed(function(
         use: Fusion.Use
     )
-        return UDim2.fromOffset(112, use(menuHeight))
+        return UDim2.fromOffset(MENU_WIDTH, use(menuHeight))
     end);
 
     local menuGroupTransparency = scope:Tween(
@@ -89,20 +118,16 @@ local function Menu(
 
         local menuHeight = Fusion.peek(menuHeight);
 
-        local flip, targetPostion = getTargetPosition(props.attachTo, menuHeight);
+        local anchorPoint, targetPostion = getTargetPosition(props.attachTo, menuHeight);
 
         menuPostion:set(UDim2.fromOffset(targetPostion.X, targetPostion.Y));
-
-        if flip == "up" then
-            menuAnchorPoint:set(Vector2.new(0, 1))
-        else
-            menuAnchorPoint:set(Vector2.new(0, 0))
-        end
+        menuAnchorPoint:set(anchorPoint);
     end));
 
     return scope:New("Frame") {
         Size = UDim2.fromScale(1, 1),
         BackgroundTransparency = 1,
+        ZIndex = 999,
 
         [Children] = {
             showComputed(scope, open, function()

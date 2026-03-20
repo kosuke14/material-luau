@@ -6,14 +6,19 @@
 local MaterialRoblox = script.Parent.Parent;
 
 local Theming = require(MaterialRoblox.Utils.Theming);
+local MenuTokens = require(MaterialRoblox.Tokens._internal.menus);
 
 local function getTokens()
 	local theme = Theming:now();
+	local tokens = MenuTokens(theme);
 
 	return {
-		labelColor = theme.color.onSurface,
-        labelFont = theme.typography.label.large,
-        trailingLabelColor = theme.color.onSurfaceVariant
+		labelColor = tokens["list-item"]["label-text"].color,
+        labelFont = tokens["list-item"]["label-text"],
+		height = tokens["list-item"].container.height,
+		iconSize = tokens["list-item"]["with-leading-icon"]["leading-icon"].size,
+        trailingColor = tokens["list-item"]["with-trailing-icon"]["trailing-icon"].color,
+		leadingColor = tokens["list-item"]["with-leading-icon"]["leading-icon"].color
 	}
 end
 

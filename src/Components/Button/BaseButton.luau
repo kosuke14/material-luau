@@ -1,48 +1,26 @@
---!nocheck
+--!nonstrict
 --[[
 	Copyright 2024 shunnedreality. This code is licensed under the MIT license.
 ]]
 
 local TextService = game:GetService("TextService");
 
-local MaterialRoblox = script.Parent.Parent;
+local MaterialRoblox = script.Parent.Parent.Parent;
 
-local TextButtonTokens = require(MaterialRoblox.Tokens.TextButton);
 local Ripple = require(MaterialRoblox.Components.Ripple);
 local Fusion = require(MaterialRoblox.Parent.Fusion);
 
 local Children = Fusion.Children;
 local OnEvent = Fusion.OnEvent;
 
-local function getPropFromVariant(
-	scope: Fusion.Scope,
-	variant: Fusion.UsedAs<"tonal" | "outlined" | "filled" | "text">,
-	addOn: string
-)
-	local Tokens = TextButtonTokens();
-	
-	return scope:Computed(function(
-		use: Fusion.Use
-	)
-		return Tokens[use(variant) .. addOn]
-	end)
-end
-
 local function TextButton(
 	scope: Fusion.Scope,
-	props: {
-		onClick: () -> ()?,
-		text: Fusion.UsedAs<string>,
-		variant: Fusion.UsedAs<"tonal" | "outlined" | "filled" | "text">?,
-	}?
+	text: string,
+    onClick: () -> (),
+    renderOutline: () -> UIStroke?,
+	icon: Instance?,
+    Tokens
 )
-	local Tokens = TextButtonTokens();
-	
-	props = props or {};
-	props.onClick = props.onClick or function() end;
-	props.variant = props.variant or "text";
-	props.text = props.text or "Hello world!";
-
 	local textChangeCount = scope:Value(0);
 	local isPressed = scope:Value(false);
 	local isHovering = scope:Value(false);
@@ -52,40 +30,53 @@ local function TextButton(
 			use: Fusion.Use
 		)
 			if use(isPressed) then
-				return UDim.new(0, 8)
+				return Tokens.containerShapePress
 			elseif use(isHovering) then
-				return UDim.new(0, 12)
+				return Tokens.containerShapeHover
 			else
-				return Tokens.shape
+				return Tokens.containerShape
 			end
 		end),
 		25,
 		1.5
-	)
+	);
+
+	print(Tokens)
 	
-	local width = scope:Computed(function(
+	local textWidth = scope:Computed(function(
 		use: Fusion.Use
 	)
 		local getTextBoundsParams = Instance.new("GetTextBoundsParams");
 
-		getTextBoundsParams.Text = use(props.text);
-		getTextBoundsParams.Font = Tokens.labelText.font;
-		getTextBoundsParams.Size = Tokens.labelText.fontSize;
+		getTextBoundsParams.Text = use(text);
+		getTextBoundsParams.Font = Tokens.label.font;
+		getTextBoundsParams.Size = Tokens.label.size;
 
-		return TextService:GetTextBoundsAsync(getTextBoundsParams).X +
-			Tokens.paddingLeft + Tokens.paddingRight;
+		return TextService:GetTextBoundsAsync(getTextBoundsParams).X
 	end)
 	
-	scope:Observer(props.text):onChange(function()
+	scope:Observer(text):onChange(function()
 		textChangeCount:set(scope.peek(textChangeCount) + 1);
+	end);
+
+	local width = scope:Computed(function(
+		use: Fusion.Use
+	)
+		local hasIcon = icon ~= nil;
+		local totalPadding = Tokens.trailingSpace + Tokens.leadingSpace;
+
+		if hasIcon then
+			totalPadding += Tokens.iconLabelSpace + Tokens.iconSize;
+		end
+
+		return use(textWidth) + totalPadding
 	end)
 	
-	return scope:New("TextButton") {
-		Text = props.text,
+	return scope:New("ImageButton") {
 		Size = scope:Tween(scope:Computed(function(
 			use: Fusion.Use
 		)
-			return UDim2.fromOffset(use(width), Tokens.height)
+			return UDim2.fromOffset(use(width), Tokens.containerHeight)
 		end), scope:Computed(function(
 			use: Fusion.Use
 		)	
@@ -96,14 +87,11 @@ local function TextButton(
 			end
 		end)),
 		AutoButtonColor = false,
+		ImageTransparency = 1,
+		BackgroundColor3 = Tokens.containerColor,
+		BackgroundTransparency = Tokens.containerTransparency,
 		
-		TextColor3 = getPropFromVariant(scope, props.variant, "TextColor");
-		BackgroundColor3 = getPropFromVariant(scope, props.variant, "BackgroundColor");
-		BackgroundTransparency = getPropFromVariant(scope, props.variant, "BackgroundTransparency");
-		TextSize = Tokens.labelText.fontSize,
-		FontFace = Tokens.labelText.font,
-		
-		[OnEvent "MouseButton1Click"] = props.onClick,
+		[OnEvent "MouseButton1Click"] = onClick,
 
 		[OnEvent "InputBegan"] = function(
 			inputObject: InputObject
@@ -129,24 +117,38 @@ local function TextButton(
 		
 		[Children] = {
 			Ripple(scope, {
-				borderRadius = cornerRadius
+				borderRadius = cornerRadius,
+				color = Tokens.rippleColor
 			}),
 			
 			scope:New("UICorner") {
 				CornerRadius = cornerRadius
 			},
+
+			scope:New("UIListLayout") {
+				FillDirection = Enum.FillDirection.Horizontal,
+				Padding = UDim.new(0, Tokens.iconLabelSpace),
+				VerticalAlignment = Enum.VerticalAlignment.Center,
+				HorizontalAlignment = Enum.HorizontalAlignment.Center
+			},
+
+			icon,
+
+			scope:New("TextLabel") {
+				TextColor3 = Tokens.labelColor,
+				Text = text,
+				Size = scope:Computed(function(
+					use: Fusion.Use
+				)
+					return UDim2.fromOffset(use(textWidth), 0)
+				end),
+				AutomaticSize = Enum.AutomaticSize.X,
+
+				TextSize = Tokens.label.size,
+				FontFace = Tokens.label.font,
+			},
 			
-			scope:Computed(function(
-				use: Fusion.Use
-			)
-				if use(props.variant) == "outlined" then
-					return scope:New("UIStroke") {
-						ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-						Color = Tokens.outlinedStrokeColor,
-						Thickness = 1
-					}
-				end
-			end)
+			renderOutline()
 		}
 	}
 end

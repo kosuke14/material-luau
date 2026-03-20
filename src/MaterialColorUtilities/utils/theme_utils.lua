@@ -75,7 +75,7 @@ export type Theme = {
  * @param customColors Array of custom colors
  * @return Theme object
  ]]
-local function themeFromSourceColor(source: number, customColors_: Array<CustomColor>?): Theme
+function themeFromSourceColor(source: number, customColors_: Array<CustomColor>?): Theme
 	local customColors: Array<CustomColor> = if customColors_ ~= nil then customColors_ else {}
 	local palette = CorePalette.of(source)
 	return {
@@ -102,7 +102,7 @@ exports.themeFromSourceColor = themeFromSourceColor
  * @param customColors Array of custom colors
  * @return Theme object
  ]]
-local function themeFromImage(image: HTMLImageElement, customColors_: Array<CustomColor>?)
+function themeFromImage(image: HTMLImageElement, customColors_: Array<CustomColor>?)
 	local customColors: Array<CustomColor> = if customColors_ ~= nil then customColors_ else {}
 	return Promise.resolve():andThen(function()
 		local source = sourceColorFromImage(image):expect()
@@ -119,7 +119,7 @@ exports.themeFromImage = themeFromImage
  *
  * @link https://m3.material.io/styles/color/the-color-system/color-roles
  ]]
-local function customColor(source: number, color: CustomColor): CustomColorGroup
+function customColor(source: number, color: CustomColor): CustomColorGroup
 	local value = color.value
 	local from = value
 	local to = source
@@ -152,7 +152,7 @@ exports.customColor = customColor
  * @param theme Theme object
  * @param options Options
  ]]
-local function applyTheme(
+function applyTheme(
 	theme: Theme,
 	options: {
 		dark: boolean?,
@@ -195,7 +195,7 @@ local function applyTheme(
 	end
 end
 exports.applyTheme = applyTheme
-local function setSchemeProperties(target: HTMLElement, scheme: Scheme, suffix_: string?)
+function setSchemeProperties(target: HTMLElement, scheme: Scheme, suffix_: string?)
 	local suffix: string = if suffix_ ~= nil then suffix_ else ""
 	for _, ref in Object.entries(scheme:toJSON()) do
 		local key, value = table.unpack(ref, 1, 2)

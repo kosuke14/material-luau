@@ -38,6 +38,7 @@ local function SideSheet(
 		Name = "Scrim",
 		Size = UDim2.fromScale(1, 1),
 		BackgroundColor3 = Tokens.scrimColor,
+        ZIndex = 9999,
 		BackgroundTransparency = scope:Tween(
 			scope:Computed(function(
 				use: Fusion.Use

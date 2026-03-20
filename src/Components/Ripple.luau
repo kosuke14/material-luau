@@ -145,7 +145,8 @@ end
 local function Ripple(
 	scope: Fusion.Scope,
 	props: {
-		borderRadius: UDim
+		borderRadius: UDim?,
+		color: Color3?
 	}?
 )
 	local Tokens = RippleTokens();
@@ -159,7 +160,7 @@ local function Ripple(
 			scope:New("CanvasGroup") {
 				ClipsDescendants = true,
 				Size = UDim2.fromScale(1, 1),
-				BackgroundColor3 = Tokens.hoverColor,
+				BackgroundColor3 = props.color or Tokens.hoverColor,
 				BackgroundTransparency = scope:Computed(function(
 					use: Fusion.Use
 				)
@@ -209,7 +210,7 @@ local function Ripple(
 						Name = "Surface",
 						BackgroundTransparency = 1,
 						ImageTransparency = 1,
-						ImageColor3 = Tokens.pressedColor,
+						ImageColor3 = props.color or Tokens.pressedColor,
 						AnchorPoint = Vector2.new(.5, .5),
 
 						[Out "Parent"] = renderRoot,

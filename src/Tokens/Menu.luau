@@ -6,14 +6,16 @@
 local MaterialRoblox = script.Parent.Parent;
 
 local Theming = require(MaterialRoblox.Utils.Theming);
+local MenuTokens = require(MaterialRoblox.Tokens._internal.menus);
 
 local function getTokens()
 	local theme = Theming:now();
+    local tokens = MenuTokens(theme);
 
 	return {
-		shape = UDim.new(0, 4),
-        verticalPadding = UDim.new(0, 8),
-        containerColor = theme.color.surfaceContainer
+		shape = tokens.container.shape,
+        verticalPadding = tokens.container.shape,
+        containerColor = tokens.container.color
 	}
 end
 

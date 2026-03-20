@@ -6,26 +6,30 @@
 local MaterialRoblox = script.Parent.Parent;
 
 local Theming = require(MaterialRoblox.Utils.Theming);
+local InternalTokens = require(MaterialRoblox.Tokens._internal["common-buttons"]);
 
-local function getTokens()
-	local theme = Theming:now();
+local function getTokens(
+    variant,
+    size: "xsmall" | "small" | "medium" | "large" | "xlarge",
+    type: "round" | "square"
+)
+    local theme = Theming:now();
+    local tokens = InternalTokens(theme);
 
-	return {
-		labelText = theme.typography.label.large,
-		tonalTextColor = theme.color.onSecondaryContainer,
-		textTextColor = theme.color.primary,
-		outlinedTextColor = theme.color.primary,
-		filledTextColor = theme.color.onPrimary,
-		tonalBackgroundColor = theme.color.secondaryContainer,
-		filledBackgroundColor = theme.color.primary,
-		textBackgroundTransparency = 1,
-		outlinedBackgroundTransparency = 1,
-		outlinedStrokeColor = theme.color.outline,
-		height = 40;
-		paddingLeft = 16,
-		paddingRight = 16,
-		shape = UDim.new(0, 20)
-	}
+    return {
+        containerHeight = tokens[size].container.height,
+        containerColor = tokens[variant].container.color,
+        containerShape = tokens[size].container.shape[type],
+        containerShapePress = tokens[size].pressed.container.shape,
+        containerShapeHover = tokens[size].selected.container.shape[type],
+        rippleColor = tokens[variant].pressed["state-layer"].color,
+        labelColor = tokens[variant]["label-text"].color,
+        label = tokens[size]["label-text"],
+        leadingSpace = tokens[size]["leading-space"],
+        trailingSpace = tokens[size]["trailing-space"],
+        iconLabelSpace = tokens[size]['icon-label-space'],
+        iconSize = tokens[size].icon.size
+    }
 end
 
-return getTokens
+return getTokens;
