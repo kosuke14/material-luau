@@ -123,7 +123,7 @@ local function Switch(
                                     return UDim2.fromOffset(Tokens.handleUnselectedSize, Tokens.handleUnselectedSize)
                                 end
                             end),
-                            17.32,
+                            37.4165738677,
                             0.9
                         ),
                         BackgroundColor3 = scope:Computed(function(

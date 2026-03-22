@@ -6,7 +6,7 @@ local Ripple = require("@self/Ripple");
 local TabItem = require("@self/TabItem");
 local Tabs = require("@self/Tabs");
 local FilledTextButton = require("@self/Button/FilledTextButton");
-local Banner = require("@self/Banner");
+--local Banner = require("@self/Banner");
 local Switch = require("@self/Switch");
 local SideSheet = require("@self/SideSheet");
 local IconButton = require("@self/IconButton");
@@ -14,6 +14,7 @@ local Menu = require("@self/Menu");
 local Item = require("@self/Item");
 local Shadow = require("@self/Shadow");
 local AlertDialog = require("@self/AlertDialog");
+local CircularProgressIndicator = require("@self/CircularProgress");
 
 return {
     Dialog = Dialog,
@@ -24,12 +25,13 @@ return {
     TabItem = TabItem,
     Tabs = Tabs,
     FilledTextButton = FilledTextButton,
-    Banner = Banner,
+--   Banner = Banner,
     Switch = Switch,
     SideSheet = SideSheet,
     IconButton = IconButton,
     Menu = Menu,
     Item = Item,
     Shadow = Shadow,
-    AlertDialog = AlertDialog
+    AlertDialog = AlertDialog,
+    CircularProgressIndicator = CircularProgressIndicator
 }

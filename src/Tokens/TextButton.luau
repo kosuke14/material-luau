@@ -16,9 +16,14 @@ local function getTokens(
     local theme = Theming:now();
     local tokens = InternalTokens(theme);
 
+    variant = variant or "text";
+    size = size or "small";
+    type = type or "round";
+
     return {
         containerHeight = tokens[size].container.height,
-        containerColor = tokens[variant].container.color,
+        containerColor = tokens[variant].container and tokens[variant].container.color or nil,
+        containerTransparency = (variant == "text") and 1 or 0,
         containerShape = tokens[size].container.shape[type],
         containerShapePress = tokens[size].pressed.container.shape,
         containerShapeHover = tokens[size].selected.container.shape[type],

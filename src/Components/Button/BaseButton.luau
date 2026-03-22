@@ -40,8 +40,6 @@ local function TextButton(
 		25,
 		1.5
 	);
-
-	print(Tokens)
 	
 	local textWidth = scope:Computed(function(
 		use: Fusion.Use

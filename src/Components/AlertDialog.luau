@@ -27,6 +27,8 @@ local function AlertDialog(
 )
     local Tokens = DialogTokens();
 
+    print(scope);
+
     return Dialog(scope, {
         headline = props.headline,
         buttons = props.buttons,

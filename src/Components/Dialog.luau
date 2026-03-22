@@ -13,6 +13,7 @@ local Fade = require(MaterialRoblox.Utils.Fade);
 local showComputed = require(MaterialRoblox.Utils.ShowComputed);
 
 local Children = Fusion.Children;
+local peek = Fusion.peek;
 local Out = Fusion.Out;
 
 local function DialogElement(
@@ -42,12 +43,12 @@ local function DialogElement(
 	
 	--Run after GUI has been defined
 	scope:Observer(currentGui):onChange(function()
-		Fade.FadeOut(scope.peek(currentGui), 0)
+		Fade.FadeOut(peek(currentGui), 0)
 		scope:Observer(props.open):onChange(function()
-			if scope.peek(props.open) then
-				Fade.FadeIn(scope.peek(currentGui), .3)
+			if peek(props.open) then
+				Fade.FadeIn(peek(currentGui), .3)
 			else
-				Fade.FadeOut(scope.peek(currentGui), .3)
+				Fade.FadeOut(peek(currentGui), .3)
 			end
 		end)
 	end)
@@ -99,9 +100,9 @@ local function DialogElement(
 							scope:Computed(function(
 								use: Fusion.Use
 							)
-								return if use(props.open) then 1 else .8
+								return if use(props.open) then 1 else .9
 							end),
-							25,
+							19,
 							1
 						)
 					},

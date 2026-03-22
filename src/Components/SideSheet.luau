@@ -86,8 +86,8 @@ local function SideSheet(
                             return UDim2.new(1, 400, 0.5, 0)
                         end
                     end),
-                    25,
-                    1
+                    14,
+                    0.8
                 ),
 				AutomaticSize = Enum.AutomaticSize.X,
 				Size = UDim2.fromScale(0, 1),

@@ -1,423 +1,115 @@
---!nocheck
---[[
-	Copyright 2024 shunnedreality. This code is licensed under the MIT license.
-]]
+local RepS = game:GetService("ReplicatedStorage")
+local RunS = game:GetService("RunService")
 
-local MaterialRoblox = script.Parent.Parent;
-
-local Fusion = require(MaterialRoblox.Parent.Fusion);
-local CircularProgressTokens = require(MaterialRoblox.Tokens.CircularProgressIndicator);
-
-local Children = Fusion.Children;
-
-local function Arc(
-    scope: Fusion.Scope,
-    props: {
-        size: Fusion.UsedAs<number>,
-        startAngle: Fusion.UsedAs<number>,
-        arcAngle: Fusion.UsedAs<number>,
-        color: Fusion.UsedAs<Color3>,
-        thickness: Fusion.UsedAs<number>,
-        segments: Fusion.UsedAs<number>
-    }
-)
-    -- This Computed will regenerate the list of arc segments whenever a property changes.
-    local segmentObjects = scope:Computed(function(use)
-        local size = use(props.size)
-        local thickness = use(props.thickness)
-        local numSegments = use(props.segments) or 60
-        local startAngle = use(props.startAngle)
-        local arcAngle = use(props.arcAngle)
-        local color = use(props.color)
-
-        -- Calculate circle properties
-        local center = size / 2
-        local radius = (size - thickness) / 2
-        local step = math.rad(arcAngle) / numSegments
-        
-        local segments = {}
-        for i = 0, numSegments do
-            -- Roblox UI angles start at the top (-90 degrees in radians) and go clockwise.
-            local angle = math.rad(startAngle - 90) + (step * i)
-            
-            -- Use a unique key for each segment for Fusion's list reconciliation
-            segments["Segment"..i] = scope:New("Frame") {
-                Name = "ArcSegment",
-                AnchorPoint = Vector2.new(0.5, 0.5),
-                BorderSizePixel = 0,
-                BackgroundColor3 = color,
-                Size = UDim2.fromOffset(thickness, thickness),
-                Position = UDim2.fromOffset(
-                    center + radius * math.cos(angle),
-                    center + radius * math.sin(angle)
-                ),
-                [Children] = {
-                    scope:New("UICorner") { CornerRadius = UDim.new(0.5, 0) }
-                }
-            }
-        end
-        return segments
-    end)
-
-    return scope:New("Frame") {
-        Name = "ArcContainer",
-        BackgroundTransparency = 1,
-        Size = scope:Computed(function(use)
-            local size = use(props.size)
-            return UDim2.fromOffset(size, size)
-        end),
-        [Children] = segmentObjects
-    }
-end
-
---[[local function Arc(
-    scope: Fusion.Scope,
-    props: {
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-        startAngle: number,
-        arcAngle: number
-    }
-)
-	local x, y = props.x, props.y
-	local width, height = props.width, props.height
-	local startAngle, arcAngle = props.startAngle, props.arcAngle
-	local color = props.color or Color3.new(1, 1, 1)
-	local thickness = props.thickness or 2
-	local segments = props.segments or 30
-
-	-- Calculate ellipse properties
-    local centerX = scope:Computed(function(
-        use: Fusion.Use
-    )
-        return use(x) + use(width) / 2
-    end);
-
-    local centerY = scope:Computed(function(
-        use: Fusion.Use
-    )
-        return use(y) + use(height) / 2
-    end);
-
-    local radiusX = scope:Computed(function(
-        use: Fusion.Use
-    )
-        return use(width) / 2;
-    end)
-
-    local radiusY = scope:Computed(function(
-        use: Fusion.Use
-    )
-        return use(height) / 2;
-    end);
-
-	-- Convert angles to radians
-    local startRad = scope:Computed(function(
-        use: Fusion.Use
-    )
-        return math.rad(-use(startAngle));
-    end);
-
-    local arcRad = scope:Computed(function(
-        use: Fusion.Use
-    )
-        return math.rad(-use(arcAngle))
-    end);
-
-    local step = scope:Computed(function(
-        use: Fusion.Use
-    )
-        return use(arcRad) / use(segments)
-    end);
-
-	local segmentObjects = {}
-	for i = 0, segments do
-		table.insert(segmentObjects, scope:New("Frame") {
-			Name = "ArcSegment",
-			AnchorPoint = Vector2.new(0.5, 0.5),
-			BorderSizePixel = 0,
-			BackgroundColor3 = color,
-			Position = scope:Computed(function(
-                use: Fusion.Use
-            )
-                local angle = use(startRad) + (use(step) * i);
-
-                return UDim2.fromOffset(
-                    use(centerX) + use(radiusX) * math.cos(angle),
-                    use(centerY) + use(radiusY) * math.sin(angle)
-                )
-            end),
-			Size = scope:Computed(function(
-                use: Fusion.Use
-            )
-                return UDim2.fromOffset(use(thickness), use(thickness));
-            end),
-                
-			[Children] = {
-				scope:New("UICorner") {
-					CornerRadius = UDim.new(0.5, 0)
-				}
-			}
-		})
-	end
-
-	return scope:New("Frame") {
-		Name = "ArcContainer",
-		BackgroundTransparency = 1,
-		Size = UDim2.new(1, 0, 1, 0),
-		Position = UDim2.new(0, 0, 0, 0),
-		[Children] = segmentObjects
-	}
-end]]
-
-local function CircularProgress(
-    scope: Fusion.Scope,
-    props: {
-        progress: Fusion.UsedAs<number>,
-        thick: boolean?
-    }
-)
-    local Tokens = CircularProgressTokens(props.thick or false);
-    local startAngle = 270;
-    local sweep = scope:Computed(function(
-        use: Fusion.Use
-    )
-        return math.clamp(
-            use(props.progress),
-            0,
-            1
-        ) * 360;
-    end);
-    local adjustedGapSize = Tokens.gap + Tokens.thickness;
-    local gapSizeSweep = (adjustedGapSize / (math.pi * Tokens.size)) * 360;
-
-    return 
-end
---[[
-local function IndeterminateCircularProgress(
-    scope: Fusion.Scope,
-    props: {
-        thick: boolean?
-    }?
-)
-    props = props or {};
-
-    local Tokens = CircularProgressTokens(props.thick or false);
-
-    local currentTime = scope:Value(os.clock());
-    local progressTransitionDegrees = scope:Value(0);
-
-    table.insert(scope,
-        RunService.RenderStepped:Connect(function()
-            currentTime:set(os.clock())
-        end)
-    );
-
-    local progressTask = coroutine.create(function()
-        while true do
-            local currentValue = Fusion.peek(progressTransitionDegrees);
-            progressTransitionDegrees:set(math.clamp(currentValue + 90, 0, 360));
-            task.wait(3)
-        end
-    end);
-
-    coroutine.resume(progressTask);
-
-    table.insert(scope, progressTask);
-
-    local globalTransition = scope:Tween(
-        360,
-
-        TweenInfo.new(
-            6,
-            Enum.EasingStyle.Quint,
-            Enum.EasingDirection.InOut,
-            -1
-        )
-    );
-
-    local additionalTransition = scope:Tween(
-        scope:Computed(function(
-            use: Fusion.Use
-        )
-            local degrees = use(currentTime) * (.5 / 90);
-
-            if math.round(degrees) == 90 then
-                task.wait(1);
-            end
-
-            return degrees
-        end),
-
-        TweenInfo.new(
-            .5,
-            Enum.EasingStyle.Quint,
-            Enum.EasingDirection.InOut,
-            0
-        )
-    );
-
-    local progressAnimation = scope:Tween(
-        progressTransitionDegrees,
-
-        TweenInfo.new(
-            1.5,
-            Enum.EasingStyle.Quint,
-            Enum.EasingDirection.InOut
-        )
-    )
-
-    local sweep = scope:Computed(function(use)
-        -- This creates the pulsating effect by growing and shrinking the arc
-        return 90 + (math.sin(use(progressAnimation) / 360 * math.pi) * 180)
-    end)
-
-    local adjustedGapSize = ;
-    local gapSizeSweep =; adjustedGapSizescope:Computed(function(
-        use: Fusion.Use
-    )
-        return 
-    end)
-
-    return scope:New("Frame") {
-        BackgroundTransparency = 1,
-        Rotation = scope:Computed(function(
-            use: Fusion.Use
-        )
-            return use(globalTransition) + use(additionalTransition)
-        end),
-        Size = UDim2.fromOffset(Tokens.size, Tokens.size),
-
-        [Children] = {
-            Arc(scope, {
-                width = Tokens.size,
-                height = Tokens.size,
-                startAngle = scope:Computed(function(
-                    use: Fusion.Use
-                )
-                    return use(sweep) + math.min(use(sweep), use(gapSizeSweep))
-                end),
-                arcAngle = scope:Computed(function(
-                    use: Fusion.Use
-                )
-                    return 360 - use(sweep) - math.min(use(sweep), use(gapSizeSweep)) * 2
-                end),
-                color = Tokens.trackColor,
-                thickness = Tokens.thickness,
-                x = 0,
-                y = 0,
-            }),
-
-            Arc(scope, {
-                startAngle = 0,
-                arcAngle = sweep,
-                color = Tokens.activeIndicatorColor,
-                thickness = Tokens.thickness,
-                x = 0,
-                y = 0,
-                width = Tokens.size,
-                height = Tokens.size
-            })
-        }
-    }
-end]]
-
-local function IndeterminateCircularProgress(
-    scope: Fusion.Scope,
-    props: {
-        thick: boolean?
-    }?
-)
-    props = props or {};
-    local Tokens = CircularProgressTokens(props.thick or false);
-
-    local AnimationDuration = 6
-    local MinProgress, MaxProgress = 0.1, 0.87
+local function CircularProgressIndeterminate(scope, props)
     
-    local progressValue = scope:Value(MinProgress)
-    local progressTween = scope:Tween(360, TweenInfo.new(
-        AnimationDuration,
-        Enum.EasingStyle.Quint,
-        Enum.EasingDirection.InOut,
-        -1, true
-    ))
-    progressValue:set(MaxProgress)
+    -- Default Props
+    local size = props.Size or 48
+    local strokeWidth = props.StrokeWidth or 4
+    local color = props.Color or Color3.fromHex("#6750A4")
+    local trackColor = props.TrackColor or Color3.new(1, 1, 1) -- Roblox frames aren't transparent by default
+    local trackTransparency = props.TrackTransparency or 1 -- Default to transparent track per M3
+    
+    -- Animation Constants
+    local DURATION = 6 -- seconds
+    local MIN_PROGRESS = 0.1
+    local MAX_PROGRESS = 0.87
 
-    local GlobalRotationTarget = scope:Value(0)
-    local globalRotation = scope:Tween(GlobalRotationTarget, TweenInfo.new(
-        AnimationDuration, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut, -1
-    ))
-    GlobalRotationTarget:set(360)
-
-    local additionalRotation = scope:Value(0)
-    table.insert(scope, task.spawn(function()
-        local rotationSequence = {
-            { target = 90, duration = 1.5, delay = 1.5 }, { target = 180, duration = 1.5, delay = 1.5 },
-            { target = 270, duration = 1.5, delay = 1.5 }, { target = 360, duration = 1.5, delay = 3 }
-        }
-        while true do
-            for _, step in ipairs(rotationSequence) do
-                additionalRotation:set(step.target)
-                task.wait(step.duration + step.delay)
-            end
-            additionalRotation:set(0)
-        end
+    -- Internal state: A time counter from 0 to 6
+    local elapsed = scope:Value(0)
+    
+    -- Update loop
+    table.insert(scope, RunS.RenderStepped:Connect(function(dt)
+        elapsed:set((scope.peek(elapsed) + dt) % DURATION)
     end))
-    local additionalValue = scope:Tween(additionalRotation, TweenInfo.new(1.5, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut));
 
-    local totalRotation = scope:Computed(function(use)
-        return use(additionalValue) + use(globalRotation)
+    -- 1. Global Rotation: 0 -> 1080 deg linear
+    local globalRotation = scope:Computed(function(use)
+        local t = use(elapsed)
+        return (t / DURATION) * 1080
     end)
-    
-    local sweep = scope:Computed(function(use) return use(progressTween) * 360 end)
-    local gapSizeSweep = ((Tokens.gap + Tokens.thickness) / (math.pi * Tokens.size)) * 360
 
-    -- THE FIX: An outer frame for rotation, and an inner frame for the content.
-    return scope:New("Frame") {
-        Name = "Rotator",
+    -- 2. Additional Rotation: Piecewise keyframes
+    local additionalRotation = scope:Computed(function(use)
+        local t = use(elapsed)
+        if t < 0.3 then return 0
+        elseif t < 1.5 then return 90
+        elseif t < 1.8 then return 90 + (t - 1.5) / 0.3 * 90 -- transition to 180
+        elseif t < 3.0 then return 180
+        elseif t < 3.3 then return 180 + (t - 3.0) / 0.3 * 90 -- transition to 270
+        elseif t < 4.5 then return 270
+        elseif t < 4.8 then return 270 + (t - 4.5) / 0.3 * 90 -- transition to 360
+        else return 360
+        end
+    end)
+
+    -- 3. Progress (Arc Sweep): min -> max -> min
+    local currentSweep = scope:Computed(function(use)
+        local t = use(elapsed)
+        local alpha = t / DURATION
+        local progress
+        if alpha < 0.5 then
+            -- 0% to 50% time: minProgress to maxProgress
+            progress = MIN_PROGRESS + (alpha * 2) * (MAX_PROGRESS - MIN_PROGRESS)
+        else
+            -- 50% to 100% time: maxProgress to minProgress
+            progress = MAX_PROGRESS - ((alpha - 0.5) * 2) * (MAX_PROGRESS - MIN_PROGRESS)
+        end
+        return progress * 360
+    end)
+
+    -- The Visual Component
+    return scope:New "Frame" {
+        Name = "M3_CircularProgress",
         BackgroundTransparency = 1,
-        Size = UDim2.fromOffset(Tokens.size, Tokens.size),
-        Position = UDim2.fromScale(0.5, 0.5), -- Or wherever you want it
+        Size = UDim2.fromOffset(size, size),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Rotation = totalRotation, -- The rotation is applied ONLY to this outer frame.
-
-        [Children] = {
-            -- This inner frame holds the arcs and is NOT rotated.
-            scope:New("Frame") {
-                Name = "ArcContainer",
+        
+        [scope.Children] = {
+            -- The Root Rotation Group
+            scope:New "Frame" {
                 BackgroundTransparency = 1,
-                Size = UDim2.new(1, 0, 1, 0), -- It fills the parent rotator frame.
-                
-                [Children] = {
-                    -- Track Arc (with the `use(progressTween)` fix from before)
-                    Arc(scope, {
-                        size = Tokens.size,
-                        startAngle = scope:Computed(function(use)
-                            local currentSweep = use(progressTween) * 360
-                            return currentSweep + math.min(currentSweep, gapSizeSweep)
-                        end),
-                        arcAngle = scope:Computed(function(use)
-                            local currentSweep = use(progressTween) * 360
-                            return 360 - currentSweep - math.min(currentSweep, gapSizeSweep) * 2
-                        end),
-                        color = Tokens.trackColor,
-                        thickness = Tokens.thickness,
-                    }),
+                Size = UDim2.fromScale(1, 1),
+                Rotation = scope:Computed(function(use)
+                    return use(globalRotation) + use(additionalRotation) - 90
+                end),
 
-                    -- Active Arc
-                    Arc(scope, {
-                        startAngle = 0,
-                        arcAngle = sweep,
-                        color = Tokens.activeIndicatorColor,
-                        thickness = Tokens.thickness,
-                        size = Tokens.size,
-                    })
+                [scope.Children] = {
+                    -- The Active Arc
+                    -- We use a Frame with a UIStroke and a UIGradient to create the arc
+                    scope:New "Frame" {
+                        Name = "ArcContainer",
+                        BackgroundTransparency = 1,
+                        Size = UDim2.fromScale(1, 1),
+                        
+                        [scope.Children] = {
+                            scope:New "UIStroke" {
+                                Color = color,
+                                Thickness = strokeWidth,
+                                ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+                            },
+                            scope:New "UICorner" {
+                                CornerRadius = UDim.new(1, 0), -- Makes it a circle
+                            },
+                            scope:New "UIGradient" {
+                                Rotation = 0,
+                                Transparency = scope:Computed(function(use)
+                                    local sweep = use(currentSweep)
+                                    -- Create a sharp cutoff for the arc
+                                    return NumberSequence.new({
+                                        NumberSequenceKeypoint.new(0, 0),
+                                        NumberSequenceKeypoint.new(math.clamp(sweep/360, 0, 0.999), 0),
+                                        NumberSequenceKeypoint.new(math.clamp(sweep/360 + 0.001, 0.001, 1), 1),
+                                        NumberSequenceKeypoint.new(1, 1),
+                                    })
+                                end)
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 end
 
-return IndeterminateCircularProgress
+return CircularProgressIndeterminate
