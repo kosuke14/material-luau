@@ -1,6 +1,7 @@
 --[[
 	MaterialLuau v1.0 - M3 Component Showcase
 	Run as LocalScript under a ScreenGui.
+	Includes dark/light mode switching.
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage");
@@ -9,8 +10,32 @@ local ScreenGui = script.Parent;
 local Fusion = require(ReplicatedStorage.Packages.Fusion);
 local MaterialRoblox = require(ReplicatedStorage.Packages.MaterialRoblox);
 
+-- Theme utilities
+local ColorBuilder = MaterialRoblox.Utils.ColorBuilder;
+local Theming = MaterialRoblox.Utils.Theming;
+local ProvideMaterial = MaterialRoblox.Utils.ProvideMaterial;
+
 local Scope = Fusion.scoped(Fusion);
 local Children = Fusion.Children;
+
+-- Theme mode state
+local isDarkMode = Scope:Value(false);
+local themeColor = Scope:Value("#4285F4");
+
+-- Generate reactive theme
+local function getTheme(mode)
+	local colors = ColorBuilder(Fusion.peek(themeColor), mode);
+	return {
+		color = colors,
+		typography = MaterialRoblox.Utils.MaterialTypography(16658221428),
+		shape = MaterialRoblox.Utils.Shape,
+	}
+end
+
+local currentTheme = Scope:Computed(function(use)
+	local dark = use(isDarkMode);
+	return getTheme(dark and "dark" or "light");
+end)
 
 -- State
 local dialogOpen = Scope:Value(false);
@@ -26,13 +51,32 @@ local textFieldValue = Scope:Value("");
 local filledTextFieldValue = Scope:Value("");
 local progressValue = Scope:Value(0.6);
 
--- Layout (declared first so header can reference it)
+-- Helper
+local function header(text, order)
+	Scope:New("TextLabel") {
+		Parent = ScrollingFrame,
+		Size = UDim2.new(1, 0, 0, 32),
+		BackgroundTransparency = 1,
+		Text = text,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		FontFace = Font.fromEnum(Enum.Font.GothamBold),
+		TextSize = 18,
+		TextColor3 = Scope:Computed(function(use)
+			return use(currentTheme).color.onSurface;
+		end),
+		LayoutOrder = order,
+	}
+end
+
+-- Layout
 local ScrollingFrame = Scope:New("ScrollingFrame") {
 	Parent = ScreenGui,
 	Size = UDim2.fromScale(1, 1),
 	CanvasSize = UDim2.fromScale(1, 0),
 	AutomaticCanvasSize = Enum.AutomaticSize.Y,
-	BackgroundColor3 = Color3.fromHex("#FEF7FF"),
+	BackgroundColor3 = Scope:Computed(function(use)
+		return use(currentTheme).color.surface;
+	end),
 
 	[Children] = {
 		Scope:New("UIListLayout") {
@@ -48,23 +92,38 @@ local ScrollingFrame = Scope:New("ScrollingFrame") {
 	}
 }
 
--- Helper (after ScrollingFrame)
-local function header(text, order)
-	Scope:New("TextLabel") {
-		Parent = ScrollingFrame,
-		Size = UDim2.new(1, 0, 0, 32),
-		BackgroundTransparency = 1,
-		Text = text,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		FontFace = Font.fromEnum(Enum.Font.GothamBold),
-		TextSize = 18,
-		TextColor3 = Color3.fromHex("#1C1B1F"),
-		LayoutOrder = order,
+-- Theme toggle button
+Scope:New("Frame") {
+	Parent = ScrollingFrame,
+	Size = UDim2.new(1, 0, 0, 48),
+	BackgroundTransparency = 1,
+	LayoutOrder = 0,
+	[Children] = {
+		Scope:New("UIListLayout") {
+			FillDirection = Enum.FillDirection.Horizontal,
+			Padding = UDim.new(0, 8),
+			VerticalAlignment = Enum.VerticalAlignment.Center,
+		},
+		MaterialRoblox.Components.Switch(Scope, {
+			active = isDarkMode,
+		}),
+		Scope:New("TextLabel") {
+			Size = UDim2.new(0, 120, 0, 24),
+			BackgroundTransparency = 1,
+			Text = Scope:Computed(function(use)
+				return use(isDarkMode) and "Dark Mode" or "Light Mode"
+			end),
+			FontFace = Font.fromEnum(Enum.Font.Gotham),
+			TextSize = 14,
+			TextColor3 = Scope:Computed(function(use)
+				return use(currentTheme).color.onSurface;
+			end),
+		},
 	}
-end
+}
 
 ------------------------------------------------------------------------
--- 1. Buttons
+-- Buttons
 ------------------------------------------------------------------------
 header("Buttons", 100)
 
@@ -79,7 +138,7 @@ Scope:New("Frame") {
 }
 
 ------------------------------------------------------------------------
--- 2. Icon Buttons
+-- Icon Buttons
 ------------------------------------------------------------------------
 header("Icon Buttons", 200)
 
@@ -94,7 +153,7 @@ Scope:New("Frame") {
 }
 
 ------------------------------------------------------------------------
--- 3. Checkbox
+-- Checkbox
 ------------------------------------------------------------------------
 header("Checkbox", 300)
 
@@ -103,14 +162,14 @@ Scope:New("Frame") {
 	[Children] = {
 		Scope:New("UIListLayout") { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 16), VerticalAlignment = Enum.VerticalAlignment.Center },
 		MaterialRoblox.Components.Checkbox(Scope, { active = checkboxA }),
-		Scope:New("TextLabel") { Size = UDim2.new(0, 80, 1, 0), BackgroundTransparency = 1, Text = "Checked", FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Color3.fromHex("#1C1B1F") },
+		Scope:New("TextLabel") { Size = UDim2.new(0, 80, 1, 0), BackgroundTransparency = 1, Text = "Checked", FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Scope:Computed(function(use) return use(currentTheme).color.onSurface end) },
 		MaterialRoblox.Components.Checkbox(Scope, { active = checkboxB }),
-		Scope:New("TextLabel") { Size = UDim2.new(0, 80, 1, 0), BackgroundTransparency = 1, Text = "Unchecked", FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Color3.fromHex("#1C1B1F") },
+		Scope:New("TextLabel") { Size = UDim2.new(0, 80, 1, 0), BackgroundTransparency = 1, Text = "Unchecked", FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Scope:Computed(function(use) return use(currentTheme).color.onSurface end) },
 	}
 }
 
 ------------------------------------------------------------------------
--- 4. Radio Buttons
+-- Radio Buttons
 ------------------------------------------------------------------------
 header("Radio Buttons", 400)
 
@@ -122,22 +181,22 @@ Scope:New("Frame") {
 			active = Scope:Computed(function(use) return use(radioOption) == 1 end),
 			onClick = function() radioOption:set(1) end,
 		}),
-		Scope:New("TextLabel") { Size = UDim2.new(0, 30, 1, 0), BackgroundTransparency = 1, Text = "A", FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Color3.fromHex("#1C1B1F") },
+		Scope:New("TextLabel") { Size = UDim2.new(0, 30, 1, 0), BackgroundTransparency = 1, Text = "A", FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Scope:Computed(function(use) return use(currentTheme).color.onSurface end) },
 		MaterialRoblox.Components.RadioButton(Scope, {
 			active = Scope:Computed(function(use) return use(radioOption) == 2 end),
 			onClick = function() radioOption:set(2) end,
 		}),
-		Scope:New("TextLabel") { Size = UDim2.new(0, 30, 1, 0), BackgroundTransparency = 1, Text = "B", FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Color3.fromHex("#1C1B1F") },
+		Scope:New("TextLabel") { Size = UDim2.new(0, 30, 1, 0), BackgroundTransparency = 1, Text = "B", FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Scope:Computed(function(use) return use(currentTheme).color.onSurface end) },
 		MaterialRoblox.Components.RadioButton(Scope, {
 			active = Scope:Computed(function(use) return use(radioOption) == 3 end),
 			onClick = function() radioOption:set(3) end,
 		}),
-		Scope:New("TextLabel") { Size = UDim2.new(0, 30, 1, 0), BackgroundTransparency = 1, Text = "C", FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Color3.fromHex("#1C1B1F") },
+		Scope:New("TextLabel") { Size = UDim2.new(0, 30, 1, 0), BackgroundTransparency = 1, Text = "C", FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Scope:Computed(function(use) return use(currentTheme).color.onSurface end) },
 	}
 }
 
 ------------------------------------------------------------------------
--- 5. Switch
+-- Switch
 ------------------------------------------------------------------------
 header("Switch", 500)
 
@@ -149,13 +208,13 @@ Scope:New("Frame") {
 		Scope:New("TextLabel") {
 			Size = UDim2.new(0, 80, 1, 0), BackgroundTransparency = 1,
 			Text = Scope:Computed(function(use) return use(switchActive) and "On" or "Off" end),
-			FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Color3.fromHex("#1C1B1F"),
+			FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Scope:Computed(function(use) return use(currentTheme).color.onSurface end),
 		},
 	}
 }
 
 ------------------------------------------------------------------------
--- 6. Chips
+-- Chips
 ------------------------------------------------------------------------
 header("Chips", 600)
 
@@ -170,14 +229,14 @@ Scope:New("Frame") {
 }
 
 ------------------------------------------------------------------------
--- 7. Divider
+-- Divider
 ------------------------------------------------------------------------
 header("Divider", 700)
 
 MaterialRoblox.Components.Divider(Scope, {}).Parent = ScrollingFrame
 
 ------------------------------------------------------------------------
--- 8. Text Fields
+-- Text Fields
 ------------------------------------------------------------------------
 header("Text Fields", 800)
 
@@ -200,7 +259,7 @@ Scope:New("Frame") {
 }
 
 ------------------------------------------------------------------------
--- 9. Linear Progress
+-- Linear Progress
 ------------------------------------------------------------------------
 header("Linear Progress", 900)
 
@@ -214,7 +273,7 @@ Scope:New("Frame") {
 	[Children] = {
 		Scope:New("UIListLayout") { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 8), VerticalAlignment = Enum.VerticalAlignment.Center },
 		MaterialRoblox.Components.TextButton(Scope, { text = "-10%", onClick = function() progressValue:set(math.clamp(Fusion.peek(progressValue) - 0.1, 0, 1)) end }),
-		Scope:New("TextLabel") { Size = UDim2.new(0, 60, 0, 24), BackgroundTransparency = 1, Text = Scope:Computed(function(use) return math.floor(use(progressValue) * 100) .. "%" end), FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Color3.fromHex("#1C1B1F") },
+		Scope:New("TextLabel") { Size = UDim2.new(0, 60, 0, 24), BackgroundTransparency = 1, Text = Scope:Computed(function(use) return math.floor(use(progressValue) * 100) .. "%" end), FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Scope:Computed(function(use) return use(currentTheme).color.onSurface end) },
 		MaterialRoblox.Components.TextButton(Scope, { text = "+10%", onClick = function() progressValue:set(math.clamp(Fusion.peek(progressValue) + 0.1, 0, 1)) end }),
 	}
 }
@@ -227,19 +286,19 @@ Scope:New("Frame") {
 }
 
 ------------------------------------------------------------------------
--- 10. Cards
+-- Cards
 ------------------------------------------------------------------------
 header("Cards", 1000)
 
 MaterialRoblox.Components.Card(Scope, {
 	onClick = function() print("Card clicked") end,
 	[Children] = {
-		Scope:New("TextLabel") { Size = UDim2.new(1, 0, 0, 40), BackgroundTransparency = 1, Text = "Filled Card - Click me", FontFace = Font.fromEnum(Enum.Font.GothamBold), TextSize = 16, TextColor3 = Color3.fromHex("#1C1B1F"), TextXAlignment = Enum.TextXAlignment.Left },
+		Scope:New("TextLabel") { Size = UDim2.new(1, 0, 0, 40), BackgroundTransparency = 1, Text = "Filled Card - Click me", FontFace = Font.fromEnum(Enum.Font.GothamBold), TextSize = 16, TextColor3 = Scope:Computed(function(use) return use(currentTheme).color.onSurface end), TextXAlignment = Enum.TextXAlignment.Left },
 	}
 }).Parent = ScrollingFrame
 
 ------------------------------------------------------------------------
--- 11. Badge
+-- Badge
 ------------------------------------------------------------------------
 header("Badge", 1100)
 
@@ -248,18 +307,18 @@ Scope:New("Frame") {
 	[Children] = {
 		Scope:New("UIListLayout") { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 24), VerticalAlignment = Enum.VerticalAlignment.Center },
 		Scope:New("Frame") {
-			Size = UDim2.fromOffset(40, 40), BackgroundColor3 = Color3.fromHex("#6750A4"),
+			Size = UDim2.fromOffset(40, 40), BackgroundColor3 = Scope:Computed(function(use) return use(currentTheme).color.primary end),
 			[Children] = {
 				Scope:New("UICorner") { CornerRadius = UDim.new(1, 0) },
-				Scope:New("TextLabel") { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Text = "M", FontFace = Font.fromEnum(Enum.Font.GothamBold), TextSize = 16, TextColor3 = Color3.new(1, 1, 1) },
+				Scope:New("TextLabel") { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Text = "M", FontFace = Font.fromEnum(Enum.Font.GothamBold), TextSize = 16, TextColor3 = Scope:Computed(function(use) return use(currentTheme).color.onPrimary end) },
 				MaterialRoblox.Components.Badge(Scope, { visible = Scope:Value(true) }),
 			}
 		},
 		Scope:New("Frame") {
-			Size = UDim2.fromOffset(40, 40), BackgroundColor3 = Color3.fromHex("#6750A4"),
+			Size = UDim2.fromOffset(40, 40), BackgroundColor3 = Scope:Computed(function(use) return use(currentTheme).color.primary end),
 			[Children] = {
 				Scope:New("UICorner") { CornerRadius = UDim.new(1, 0) },
-				Scope:New("TextLabel") { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Text = "N", FontFace = Font.fromEnum(Enum.Font.GothamBold), TextSize = 16, TextColor3 = Color3.new(1, 1, 1) },
+				Scope:New("TextLabel") { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Text = "N", FontFace = Font.fromEnum(Enum.Font.GothamBold), TextSize = 16, TextColor3 = Scope:Computed(function(use) return use(currentTheme).color.onPrimary end) },
 				MaterialRoblox.Components.Badge(Scope, { count = 12, visible = Scope:Value(true) }),
 			}
 		},
@@ -267,7 +326,7 @@ Scope:New("Frame") {
 }
 
 ------------------------------------------------------------------------
--- 12. FAB
+-- FAB
 ------------------------------------------------------------------------
 header("FloatingActionButton", 1200)
 
@@ -282,7 +341,7 @@ Scope:New("Frame") {
 }
 
 ------------------------------------------------------------------------
--- 13. Icons
+-- Icons
 ------------------------------------------------------------------------
 header("Icons", 1300)
 
@@ -299,7 +358,7 @@ Scope:New("Frame") {
 }
 
 ------------------------------------------------------------------------
--- 14. Dialog
+-- Dialog
 ------------------------------------------------------------------------
 header("Dialog", 1400)
 
@@ -316,7 +375,7 @@ MaterialRoblox.Components.Dialog(Scope, {
 }).Parent = ScreenGui
 
 ------------------------------------------------------------------------
--- 15. Alert Dialog
+-- Alert Dialog
 ------------------------------------------------------------------------
 header("AlertDialog", 1500)
 
@@ -335,7 +394,7 @@ MaterialRoblox.Components.AlertDialog(Scope, {
 }).Parent = ScreenGui
 
 ------------------------------------------------------------------------
--- 16. Side Sheet
+-- Side Sheet
 ------------------------------------------------------------------------
 header("SideSheet", 1600)
 
@@ -346,12 +405,12 @@ MaterialRoblox.Components.TextButton(Scope, {
 MaterialRoblox.Components.SideSheet(Scope, {
 	open = sideSheetOpen, headline = "Side Sheet",
 	[Children] = {
-		Scope:New("TextLabel") { Size = UDim2.new(1, 0, 0, 40), BackgroundTransparency = 1, Text = "Sheet content goes here.", FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Color3.fromHex("#1C1B1F") },
+		Scope:New("TextLabel") { Size = UDim2.new(1, 0, 0, 40), BackgroundTransparency = 1, Text = "Sheet content", FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Scope:Computed(function(use) return use(currentTheme).color.onSurface end) },
 	},
 }).Parent = ScreenGui
 
 ------------------------------------------------------------------------
--- 17. Snackbar
+-- Snackbar
 ------------------------------------------------------------------------
 header("Snackbar", 1700)
 
@@ -369,7 +428,7 @@ MaterialRoblox.Components.Snackbar(Scope, {
 }).Parent = ScreenGui
 
 ------------------------------------------------------------------------
--- 18. Navigation Bar
+-- Navigation Bar
 ------------------------------------------------------------------------
 header("NavigationBar", 1800)
 
@@ -385,7 +444,7 @@ MaterialRoblox.Components.NavigationBar(Scope, {
 }).Parent = ScrollingFrame
 
 ------------------------------------------------------------------------
--- 19. Tabs
+-- Tabs
 ------------------------------------------------------------------------
 header("Tabs", 1900)
 
@@ -400,7 +459,7 @@ MaterialRoblox.Components.Tabs(Scope, {
 }).Parent = ScrollingFrame
 
 ------------------------------------------------------------------------
--- 20. Menu
+-- Menu
 ------------------------------------------------------------------------
 header("Menu", 2000)
 
@@ -418,4 +477,4 @@ MaterialRoblox.Components.Menu(Scope, {
 	}
 }).Parent = ScreenGui
 
-print("[MaterialLuau] Example loaded")
+print("[MaterialLuau] Example loaded with dark/light mode support")
