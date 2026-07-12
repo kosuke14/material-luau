@@ -72,7 +72,7 @@ local function SideSheet(
 
 			scope:New("Frame") {
 				AnchorPoint = Vector2.new(1, .5),
-				Position = scope:Spring(
+				Position = scope:Tween(
                     scope:Computed(function(
                         use: Fusion.Use
                     )
@@ -86,8 +86,7 @@ local function SideSheet(
                             return UDim2.new(1, 400, 0.5, 0)
                         end
                     end),
-                    14,
-                    0.8
+                    TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
                 ),
 				AutomaticSize = Enum.AutomaticSize.X,
 				Size = UDim2.fromScale(0, 1),
