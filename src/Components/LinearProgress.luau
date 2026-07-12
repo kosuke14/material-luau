@@ -89,10 +89,17 @@ local function LinearProgress(scope: Fusion.Scope, props: {
                 end),
                 Position = scope:Computed(function(use)
                     local isIndeterminate = props.indeterminate and use(props.indeterminate) or false
-                    local pos = isIndeterminate and getIndeterminatePosition(use) or 0
+                    if not isIndeterminate then
+                        return UDim2.new(0, 0, 0.5, 0)
+                    end
+                    local pos = getIndeterminatePosition(use)
                     return UDim2.new(pos, 0, 0.5, 0)
                 end),
-                AnchorPoint = Vector2.new(0, 0.5),
+                AnchorPoint = scope:Computed(function(use)
+                    local isIndeterminate = props.indeterminate and use(props.indeterminate) or false
+                    -- Indeterminate: anchor right so bar starts off-screen left
+                    return isIndeterminate and Vector2.new(1, 0.5) or Vector2.new(0, 0.5)
+                end),
                 BackgroundColor3 = Tokens.activeIndicatorColor,
                 BorderSizePixel = 0,
 
