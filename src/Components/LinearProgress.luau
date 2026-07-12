@@ -13,7 +13,6 @@ local LinearProgressTokens = require(MaterialRoblox.Tokens.LinearProgress);
 local Children = Fusion.Children;
 
 local INDETERMINATE_DURATION = 4;
-local INDETERMINATE_SECONDARY_DURATION = 2;
 
 local function LinearProgress(
 	scope: Fusion.Scope,
@@ -120,7 +119,6 @@ local function LinearProgress(
 					0.9
 				),
 				AnchorPoint = Vector2.new(0, 0.5),
-				Position = UDim2.new(0, 0, 0.5, 0),
 				BackgroundColor3 = scope:Computed(function(use)
 					return getColor(use, 0)
 				end),
