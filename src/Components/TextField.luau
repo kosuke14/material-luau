@@ -124,8 +124,13 @@ local function TextField(scope: Fusion.Scope, props: {
                         TextColor3 = Tokens.placeholderColor,
                         TextXAlignment = Enum.TextXAlignment.Left,
                         TextTruncate = Enum.TextTruncate.AtEnd,
+                        -- Visible when no text AND not focused, hidden otherwise
                         TextTransparency = scope:Computed(function(use)
-                            return (use(hasText) or use(isFocused)) and 1 or 0
+                            if use(hasText) or use(isFocused) then
+                                return 1
+                            else
+                                return 0
+                            end
                         end),
 
                         [Children] = {
@@ -149,7 +154,13 @@ local function TextField(scope: Fusion.Scope, props: {
                         TextXAlignment = Enum.TextXAlignment.Left,
 
                         [OnEvent "Focused"] = function() isFocused:set(true) end,
-                        [OnEvent "FocusLost"] = function() isFocused:set(false) end,
+                        [OnEvent "FocusLost"] = function(textBox) 
+                            isFocused:set(false)
+                            props.value:set(textBox.Text)
+                        end,
+                        [OnEvent "TextChanged"] = function(textBox)
+                            props.value:set(textBox.Text)
+                        end,
 
                         [Children] = {
                             scope:New("UIPadding") {
