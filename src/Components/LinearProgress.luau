@@ -32,10 +32,10 @@ local function LinearProgress(scope: Fusion.Scope, props: {
         }
     }
 
-    -- Dot at the end of determinate bar (M3 spec)
+    -- Dot at the end of track (M3 spec: same color as bar)
     local dot = scope:New("Frame") {
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0, 0, 0.5, 0),
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, 0, 0.5, 0),
         Size = UDim2.fromOffset(4, 4),
         BackgroundColor3 = scope:Computed(function(use)
             local t = use(tokens)
@@ -63,11 +63,6 @@ local function LinearProgress(scope: Fusion.Scope, props: {
         TweenService:Create(bar, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
             Size = UDim2.new(width, 0, 0, t.trackHeight),
             Position = UDim2.new(width / 2, 0, 0.5, 0),
-        }):Play()
-
-        -- Animate dot position
-        TweenService:Create(dot, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
-            Position = UDim2.new(width, 0, 0.5, 0),
         }):Play()
     end
 
