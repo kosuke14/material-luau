@@ -6,6 +6,7 @@ local Icon = require(MaterialRoblox.Components.Icon);
 
 local Children = Fusion.Children;
 local OnEvent = Fusion.OnEvent;
+local OnChange = Fusion.OnChange;
 
 local function TextField(scope: Fusion.Scope, props: {
     placeholder: string?,
@@ -20,6 +21,8 @@ local function TextField(scope: Fusion.Scope, props: {
 })
     local Tokens = TextFieldTokens(props.variant or "outlined");
     local variant = props.variant or "outlined";
+	local value = props.value or scope:Value("");
+	props.value = value
     local error = props.error or scope:Value(false);
     local disabled = props.disabled or scope:Value(false);
     local isFocused = scope:Value(false);
@@ -34,8 +37,6 @@ local function TextField(scope: Fusion.Scope, props: {
     local isLabelFloated = scope:Computed(function(use)
         return use(hasText) or use(isFocused)
     end)
-
-    local connected = false
 
     return scope:New("Frame") {
         Size = UDim2.new(1, 0, 0, Tokens.containerHeight + (props.supportingText and 24 or 0)),
@@ -127,7 +128,7 @@ local function TextField(scope: Fusion.Scope, props: {
                         TextXAlignment = Enum.TextXAlignment.Left,
                         TextTruncate = Enum.TextTruncate.AtEnd,
                         TextTransparency = scope:Computed(function(use)
-                            if use(hasText) or use(isFocused) then
+                            if use(hasText) or not use(isFocused) then
                                 return 1
                             else
                                 return 0
@@ -156,16 +157,13 @@ local function TextField(scope: Fusion.Scope, props: {
 
                         [OnEvent "Focused"] = function(textBox)
                             isFocused:set(true)
-                            if not connected then
-                                connected = true
-                                textBox:GetPropertyChangedSignal("Text"):Connect(function()
-                                    props.value:set(textBox.Text)
-                                end)
-                            end
                         end,
                         [OnEvent "FocusLost"] = function(textBox)
                             isFocused:set(false)
                         end,
+						[OnChange "Text"] = function(textBox)
+							value:set(textBox.Text)
+						end,
 
                         [Children] = {
                             scope:New("UIPadding") {
