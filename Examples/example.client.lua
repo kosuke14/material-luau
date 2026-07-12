@@ -335,6 +335,7 @@ Scope:New("Frame") {
 ------------------------------------------------------------------------
 addHeader("LinearProgress", 800)
 
+-- Progress bar
 Scope:New("Frame") {
 	Parent = ScrollingFrame,
 	Size = UDim2.new(1, 0, 0, 24),
@@ -348,8 +349,51 @@ Scope:New("Frame") {
 	}
 }
 
+-- Controls
+Scope:New("Frame") {
+	Parent = ScrollingFrame,
+	Size = UDim2.new(1, 0, 0, 40),
+	BackgroundTransparency = 1,
+	LayoutOrder = 802,
+
+	[Children] = {
+		Scope:New("UIListLayout") {
+			FillDirection = Enum.FillDirection.Horizontal,
+			Padding = UDim.new(0, 8),
+			VerticalAlignment = Enum.VerticalAlignment.Center,
+		},
+		MaterialRoblox.Components.TextButton(Scope, {
+			text = "-10%",
+			variant = "outlined",
+			onClick = function()
+				local current = progressValue:get()
+				progressValue:set(math.clamp(current - 0.1, 0, 1))
+			end,
+		}),
+		Scope:New("TextLabel") {
+			Size = UDim2.new(0, 60, 0, 24),
+			BackgroundTransparency = 1,
+			Text = Scope:Computed(function(use)
+				return math.floor(use(progressValue) * 100) .. "%"
+			end),
+			FontFace = Font.fromEnum(Enum.Font.Gotham),
+			TextSize = 14,
+			TextColor3 = Color3.fromHex("#1C1B1F"),
+		},
+		MaterialRoblox.Components.TextButton(Scope, {
+			text = "+10%",
+			variant = "outlined",
+			onClick = function()
+				local current = progressValue:get()
+				progressValue:set(math.clamp(current + 0.1, 0, 1))
+			end,
+		}),
+	}
+}
+
 addHeader("LinearProgress - Indeterminate", 810)
 
+-- Indeterminate progress
 Scope:New("Frame") {
 	Parent = ScrollingFrame,
 	Size = UDim2.new(1, 0, 0, 24),
@@ -358,7 +402,7 @@ Scope:New("Frame") {
 
 	[Children] = {
 		MaterialRoblox.Components.LinearProgress(Scope, {
-			indeterminate = true,
+			indeterminate = Scope:Value(true),
 		}),
 	}
 }
@@ -368,33 +412,79 @@ Scope:New("Frame") {
 ------------------------------------------------------------------------
 addHeader("Card", 900)
 
+-- Filled Card
 MaterialRoblox.Components.Card(Scope, {
 	variant = "filled",
 	onClick = function()
 		print("Filled card clicked")
 	end,
 	[Children] = {
-		Scope:New("TextLabel") {
-			Size = UDim2.new(1, 0, 0, 20),
+		Scope:New("Frame") {
+			Size = UDim2.new(1, 0, 0, 0),
+			AutomaticSize = Enum.AutomaticSize.Y,
 			BackgroundTransparency = 1,
-			Text = "Filled Card - Click me",
-			FontFace = Font.fromEnum(Enum.Font.Gotham),
-			TextSize = 14,
-			TextColor3 = Color3.fromHex("#1C1B1F"),
+
+			[Children] = {
+				Scope:New("UIListLayout") {
+					Padding = UDim.new(0, 8),
+				},
+				Scope:New("TextLabel") {
+					Size = UDim2.new(1, 0, 0, 24),
+					BackgroundTransparency = 1,
+					Text = "Filled Card",
+					FontFace = Font.fromEnum(Enum.Font.GothamBold),
+					TextSize = 16,
+					TextColor3 = Color3.fromHex("#1C1B1F"),
+					TextXAlignment = Enum.TextXAlignment.Left,
+				},
+				Scope:New("TextLabel") {
+					Size = UDim2.new(1, 0, 0, 40),
+					BackgroundTransparency = 1,
+					Text = "This is a filled card with standard M3 styling. It has a surface container background and 12dp corner radius.",
+					FontFace = Font.fromEnum(Enum.Font.Gotham),
+					TextSize = 14,
+					TextColor3 = Color3.fromHex("#49454F"),
+					TextWrapped = true,
+					TextXAlignment = Enum.TextXAlignment.Left,
+				},
+			}
 		},
 	}
 }).Parent = ScrollingFrame
 
+-- Outlined Card
 MaterialRoblox.Components.Card(Scope, {
 	variant = "outlined",
 	[Children] = {
-		Scope:New("TextLabel") {
-			Size = UDim2.new(1, 0, 0, 20),
+		Scope:New("Frame") {
+			Size = UDim2.new(1, 0, 0, 0),
+			AutomaticSize = Enum.AutomaticSize.Y,
 			BackgroundTransparency = 1,
-			Text = "Outlined Card",
-			FontFace = Font.fromEnum(Enum.Font.Gotham),
-			TextSize = 14,
-			TextColor3 = Color3.fromHex("#1C1B1F"),
+
+			[Children] = {
+				Scope:New("UIListLayout") {
+					Padding = UDim.new(0, 8),
+				},
+				Scope:New("TextLabel") {
+					Size = UDim2.new(1, 0, 0, 24),
+					BackgroundTransparency = 1,
+					Text = "Outlined Card",
+					FontFace = Font.fromEnum(Enum.Font.GothamBold),
+					TextSize = 16,
+					TextColor3 = Color3.fromHex("#1C1B1F"),
+					TextXAlignment = Enum.TextXAlignment.Left,
+				},
+				Scope:New("TextLabel") {
+					Size = UDim2.new(1, 0, 0, 40),
+					BackgroundTransparency = 1,
+					Text = "This is an outlined card with a 1dp border. It has a transparent background.",
+					FontFace = Font.fromEnum(Enum.Font.Gotham),
+					TextSize = 14,
+					TextColor3 = Color3.fromHex("#49454F"),
+					TextWrapped = true,
+					TextXAlignment = Enum.TextXAlignment.Left,
+				},
+			}
 		},
 	}
 }).Parent = ScrollingFrame
@@ -726,5 +816,21 @@ MaterialRoblox.Components.Tabs(Scope, {
 		}
 	end,
 }).Parent = ScrollingFrame
+
+------------------------------------------------------------------------
+-- 20. Tooltip
+------------------------------------------------------------------------
+addHeader("Tooltip", 2000)
+
+local tooltipButton = MaterialRoblox.Components.TextButton(Scope, {
+	text = "Hover me for tooltip",
+	variant = "outlined",
+})
+tooltipButton.Parent = ScrollingFrame
+
+MaterialRoblox.Components.Tooltip(Scope, {
+	text = "This is a Material Design 3 tooltip",
+	attachTo = tooltipButton,
+}).Parent = ScreenGui
 
 print("[MaterialLuau] Example loaded - all components rendered")

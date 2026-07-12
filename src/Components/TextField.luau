@@ -3,22 +3,19 @@
 	Copyright 2024 shunnedreality. This code is licensed under the MIT license.
 ]]
 
-local TextService = game:GetService("TextService");
-
 local MaterialRoblox = script.Parent.Parent;
 
 local Fusion = require(MaterialRoblox.Parent.Fusion);
 local TextFieldTokens = require(MaterialRoblox.Tokens.TextField);
 local Icon = require(MaterialRoblox.Components.Icon);
-local showComputed = require(MaterialRoblox.Utils.ShowComputed);
 
 local Children = Fusion.Children;
 local OnEvent = Fusion.OnEvent;
 
 local LEADING_PADDING = 48;
 local TRAILING_PADDING = 48;
-const LEADING_ONLY_PADDING = 16;
-const TRAILING_ONLY_PADDING = 16;
+local LEADING_ONLY_PADDING = 16;
+local TRAILING_ONLY_PADDING = 16;
 
 local function TextField(
 	scope: Fusion.Scope,
@@ -43,6 +40,8 @@ local function TextField(
 	local disabled = props.disabled or scope:Value(false);
 	local isFocused = scope:Value(false);
 	local isHovering = scope:Value(false);
+	local hasLeadingIcon = props.leadingIcon ~= nil
+	local hasTrailingIcon = props.trailingIcon ~= nil
 
 	local hasText = scope:Computed(function(use)
 		return #use(props.value) > 0
@@ -50,12 +49,6 @@ local function TextField(
 
 	local isLabelFloated = scope:Computed(function(use)
 		return use(hasText) or use(isFocused)
-	end)
-
-	local horizontalPadding = scope:Computed(function(use)
-		local left = if use(props.leadingIcon) then LEADING_PADDING else LEADING_ONLY_PADDING
-		local right = if use(props.trailingIcon) then TRAILING_PADDING else TRAILING_ONLY_PADDING
-		return UDim.new(0, left), UDim.new(0, right)
 	end)
 
 	return scope:New("Frame") {
@@ -93,7 +86,7 @@ local function TextField(
 						}
 					else nil,
 
-					-- Active indicator (bottom bar for filled, outline for outlined)
+					-- Active indicator (bottom bar for filled)
 					if variant == "filled" then
 						scope:New("Frame") {
 							Size = UDim2.fromScale(1, 0),
@@ -169,11 +162,12 @@ local function TextField(
 					else nil,
 
 					-- Leading icon
-					showComputed(scope, props.leadingIcon, function()
-						return scope:Hydrate(Icon(scope, {
-							icon = props.leadingIcon
+					if hasLeadingIcon then
+						scope:Hydrate(Icon(scope, {
+							icon = props.leadingIcon,
 						})) {
-							Position = UDim2.fromOffset(12, 0),
+							Size = UDim2.fromOffset(24, 24),
+							Position = UDim2.new(0, 12, 0.5, 0),
 							AnchorPoint = Vector2.new(0, 0.5),
 							ImageColor3 = scope:Computed(function(use)
 								if use(disabled) then
@@ -183,14 +177,15 @@ local function TextField(
 								end
 							end),
 						}
-					end),
+					else nil,
 
 					-- Trailing icon
-					showComputed(scope, props.trailingIcon, function()
-						return scope:Hydrate(Icon(scope, {
-							icon = props.trailingIcon
+					if hasTrailingIcon then
+						scope:Hydrate(Icon(scope, {
+							icon = props.trailingIcon,
 						})) {
-							Position = UDim2.new(1, -12, 0, 0),
+							Size = UDim2.fromOffset(24, 24),
+							Position = UDim2.new(1, -12, 0.5, 0),
 							AnchorPoint = Vector2.new(1, 0.5),
 							ImageColor3 = scope:Computed(function(use)
 								if use(error) then
@@ -202,11 +197,11 @@ local function TextField(
 								end
 							end),
 						}
-					end),
+					else nil,
 
 					-- Label text (floating)
-					showComputed(scope, props.label, function()
-						return scope:New("TextLabel") {
+					if props.label then
+						scope:New("TextLabel") {
 							BackgroundTransparency = 1,
 							AutomaticSize = Enum.AutomaticSize.XY,
 							TextXAlignment = Enum.TextXAlignment.Left,
@@ -215,9 +210,9 @@ local function TextField(
 							Position = scope:Spring(
 								scope:Computed(function(use)
 									if use(isLabelFloated) then
-										return UDim2.new(0, if use(props.leadingIcon) then 48 else 16, 0, 4)
+										return UDim2.new(0, if hasLeadingIcon then 48 else 16, 0, 4)
 									else
-										return UDim2.new(0, if use(props.leadingIcon) then 48 else 16, 0.5, 0)
+										return UDim2.new(0, if hasLeadingIcon then 48 else 16, 0.5, 0)
 									end
 								end),
 								37.4165738677,
@@ -250,7 +245,7 @@ local function TextField(
 								end
 							end),
 						}
-					end),
+					else nil,
 
 					-- TextBox input
 					scope:New("TextBox") {
@@ -259,9 +254,7 @@ local function TextField(
 						BackgroundTransparency = 1,
 						ClearTextOnFocus = false,
 						Text = "",
-						PlaceholderText = if not props.label and props.placeholder
-							then props.placeholder
-							else "",
+						PlaceholderText = if props.placeholder then props.placeholder else "",
 						FontFace = Tokens.inputFont,
 						TextSize = Tokens.inputSize,
 						TextColor3 = Tokens.inputColor,
@@ -292,24 +285,16 @@ local function TextField(
 
 						[Children] = {
 							scope:New("UIPadding") {
-								PaddingLeft = scope:Computed(function(use)
-									return if use(props.leadingIcon)
-										then UDim.new(0, 48)
-										else UDim.new(0, 16)
-								end),
-								PaddingRight = scope:Computed(function(use)
-									return if use(props.trailingIcon)
-										then UDim.new(0, 48)
-										else UDim.new(0, 16)
-								end),
+								PaddingLeft = UDim.new(0, if hasLeadingIcon then 48 else 16),
+								PaddingRight = UDim.new(0, if hasTrailingIcon then 48 else 16),
 								PaddingTop = UDim.new(0, if props.label then 8 else 0),
 							}
 						}
 					},
 
 					-- Supporting text
-					showComputed(scope, props.supportingText, function()
-						return scope:New("TextLabel") {
+					if props.supportingText then
+						scope:New("TextLabel") {
 							Size = UDim2.new(1, 0, 0, 20),
 							Position = UDim2.fromScale(0, 1),
 							BackgroundTransparency = 1,
@@ -324,7 +309,7 @@ local function TextField(
 									else Tokens.supportingTextColor
 							end),
 						}
-					end),
+					else nil,
 				}
 			}
 		}

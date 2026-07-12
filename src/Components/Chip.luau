@@ -9,7 +9,6 @@ local Fusion = require(MaterialRoblox.Parent.Fusion);
 local ChipTokens = require(MaterialRoblox.Tokens.Chip);
 local Icon = require(MaterialRoblox.Components.Icon);
 local Ripple = require(MaterialRoblox.Components.Ripple);
-local showComputed = require(MaterialRoblox.Utils.ShowComputed);
 
 local Children = Fusion.Children;
 local OnEvent = Fusion.OnEvent;
@@ -28,6 +27,7 @@ local function Chip(
 	local Tokens = ChipTokens(props.variant or "flat");
 	local selected = props.selected or scope:Value(false);
 	local disabled = props.disabled or scope:Value(false);
+	local hasIcon = props.icon ~= nil
 
 	return scope:New("ImageButton") {
 		Size = UDim2.new(0, 0, 0, Tokens.containerHeight),
@@ -68,14 +68,14 @@ local function Chip(
 			},
 
 			-- Outline for unselected flat chips
-			showComputed(scope, scope:Computed(function(use)
-				return not use(selected) and props.variant ~= "elevated"
-			end), function()
-				return scope:New("UIStroke") {
-					Thickness = Tokens.unselectedOutlineWidth,
+			if not hasIcon or props.variant == "elevated" then
+				scope:New("UIStroke") {
+					Thickness = scope:Computed(function(use)
+						return if use(selected) then 0 else Tokens.unselectedOutlineWidth
+					end),
 					Color = Tokens.unselectedOutlineColor,
 				}
-			end),
+			else nil,
 
 			Ripple(scope, {
 				borderRadius = Tokens.containerShape,
@@ -101,8 +101,8 @@ local function Chip(
 					},
 
 					-- Leading icon
-					showComputed(scope, props.icon, function()
-						return scope:Hydrate(Icon(scope, {
+					if hasIcon then
+						scope:Hydrate(Icon(scope, {
 							icon = props.icon,
 						})) {
 							Size = UDim2.fromOffset(Tokens.iconSize, Tokens.iconSize),
@@ -114,7 +114,7 @@ local function Chip(
 								end
 							end),
 						}
-					end),
+					else nil,
 
 					-- Label
 					scope:New("TextLabel") {

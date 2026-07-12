@@ -9,11 +9,10 @@ local Fusion = require(MaterialRoblox.Parent.Fusion);
 local CheckboxTokens = require(MaterialRoblox.Tokens.Checkbox);
 local Ripple = require(MaterialRoblox.Components.Ripple);
 local showComputed = require(MaterialRoblox.Utils.ShowComputed);
+local Icon = require(MaterialRoblox.Components.Icon);
 
 local Children = Fusion.Children;
 local OnEvent = Fusion.OnEvent;
-
-local CHECKMARK_IMAGE = "rbxassetid://128524955835262";
 
 local function Checkbox(
 	scope: Fusion.Scope,
@@ -73,7 +72,7 @@ local function Checkbox(
 				color = Tokens.selectedPressedStateLayerColor
 			}),
 
-			-- State layer (hover/press feedback)
+			-- State layer
 			scope:New("Frame") {
 				Size = UDim2.fromOffset(Tokens.stateLayerSize, Tokens.stateLayerSize),
 				AnchorPoint = Vector2.new(0.5, 0.5),
@@ -151,12 +150,13 @@ local function Checkbox(
 					showComputed(scope, scope:Computed(function(use)
 						return use(props.active)
 					end), function()
-						return scope:New("ImageLabel") {
+						return scope:Hydrate(Icon(scope, {
+							icon = "check",
+							fill = true,
+						})) {
 							Size = UDim2.fromOffset(Tokens.iconSize, Tokens.iconSize),
 							AnchorPoint = Vector2.new(0.5, 0.5),
 							Position = UDim2.fromScale(0.5, 0.5),
-							BackgroundTransparency = 1,
-							Image = CHECKMARK_IMAGE,
 							ImageColor3 = scope:Computed(function(use)
 								if use(error) then
 									return Tokens.errorIconColor
@@ -164,7 +164,6 @@ local function Checkbox(
 									return Tokens.selectedIconColor
 								end
 							end),
-							ScaleType = Enum.ScaleType.Fit,
 
 							[Children] = {
 								scope:New("UIScale") {

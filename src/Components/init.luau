@@ -24,6 +24,7 @@ local Divider = require("@self/Divider");
 local Chip = require("@self/Chip");
 local LinearProgress = require("@self/LinearProgress");
 local Badge = require("@self/Badge");
+local Tooltip = require("@self/Tooltip");
 
 return {
     Dialog = Dialog,
@@ -52,4 +53,5 @@ return {
     Chip = Chip,
     LinearProgress = LinearProgress,
     Badge = Badge,
+    Tooltip = Tooltip,
 }
