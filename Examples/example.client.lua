@@ -213,9 +213,9 @@ Scope:New("Frame") {
 	Parent = ScrollingFrame, Size = UDim2.new(1, 0, 0, 40), BackgroundTransparency = 1, LayoutOrder = 902,
 	[Children] = {
 		Scope:New("UIListLayout") { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 8), VerticalAlignment = Enum.VerticalAlignment.Center },
-		MaterialRoblox.Components.TextButton(Scope, { text = "-10%", onClick = function() progressValue:set(math.clamp(progressValue:get() - 0.1, 0, 1)) end }),
+		MaterialRoblox.Components.TextButton(Scope, { text = "-10%", onClick = function() progressValue:set(math.clamp(Fusion.peek(progressValue) - 0.1, 0, 1)) end }),
 		Scope:New("TextLabel") { Size = UDim2.new(0, 60, 0, 24), BackgroundTransparency = 1, Text = Scope:Computed(function(use) return math.floor(use(progressValue) * 100) .. "%" end), FontFace = Font.fromEnum(Enum.Font.Gotham), TextSize = 14, TextColor3 = Color3.fromHex("#1C1B1F") },
-		MaterialRoblox.Components.TextButton(Scope, { text = "+10%", onClick = function() progressValue:set(math.clamp(progressValue:get() + 0.1, 0, 1)) end }),
+		MaterialRoblox.Components.TextButton(Scope, { text = "+10%", onClick = function() progressValue:set(math.clamp(Fusion.peek(progressValue) + 0.1, 0, 1)) end }),
 	}
 }
 
