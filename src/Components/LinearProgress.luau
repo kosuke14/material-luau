@@ -11,20 +11,18 @@ local function LinearProgress(scope: Fusion.Scope, props: {
 })
 	local Tokens = LinearProgressTokens();
 
-	-- Goal values for animation
+	-- Goal values
 	local goalPosition = scope:Value(UDim2.new(-0.5, 0, 0.5, 0))
 	local goalSize = scope:Value(UDim2.new(0.5, 0, 0, Tokens.trackHeight))
 
-	-- Animated values with different tween infos
-	local tweenInfoIndeterminatePos = TweenInfo.new(2.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-	local tweenInfoIndeterminateSizeShort = TweenInfo.new(0.75, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut)
-	local tweenInfoIndeterminateSizeLong = TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut)
-	local tweenInfoDeterminate = TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+	-- TweenInfo as scope values (reactive)
+	local currentTweenInfo = scope:Value(TweenInfo.new(2.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out))
 
-	local animatedPosition = scope:Tween(goalPosition, tweenInfoIndeterminatePos)
-	local animatedSize = scope:Tween(goalSize, tweenInfoIndeterminateSizeShort)
+	-- Animated values
+	local animatedPosition = scope:Tween(goalPosition, currentTweenInfo)
+	local animatedSize = scope:Tween(goalSize, currentTweenInfo)
 
-	-- Reset values instantly (no tween)
+	-- Reset instantly (no tween)
 	local function resetInstantly()
 		goalPosition:set(UDim2.new(-0.5, 0, 0.5, 0))
 		goalSize:set(UDim2.new(0.5, 0, 0, Tokens.trackHeight))
@@ -40,18 +38,24 @@ local function LinearProgress(scope: Fusion.Scope, props: {
 
 		task.spawn(function()
 			while running do
-				-- Reset instantly (no tween)
+				-- Reset instantly
 				resetInstantly()
 
-				-- Phase 1: Move right + grow
+				-- Phase 1: Move right + grow (2.5s Quint Out for position, 0.75s Quint InOut for size)
+				currentTweenInfo:set(TweenInfo.new(2.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out))
 				goalPosition:set(UDim2.new(0.3, 0, 0.5, 0))
+
+				currentTweenInfo:set(TweenInfo.new(0.75, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut))
 				goalSize:set(UDim2.new(0.75, 0, 0, Tokens.trackHeight))
 				task.wait(0.75)
 
 				if not running then break end
 
-				-- Phase 2: Shrink + move off-screen
+				-- Phase 2: Shrink + move off-screen (0.5s Quint InOut for size, 1.75s Quint Out for position)
+				currentTweenInfo:set(TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut))
 				goalSize:set(UDim2.new(0.5, 0, 0, Tokens.trackHeight))
+
+				currentTweenInfo:set(TweenInfo.new(1.75, Enum.EasingStyle.Quint, Enum.EasingDirection.Out))
 				goalPosition:set(UDim2.new(1.5, 0, 0.5, 0))
 				task.wait(0.5)
 
@@ -60,8 +64,9 @@ local function LinearProgress(scope: Fusion.Scope, props: {
 		end)
 	end
 
-	-- Determinate mode with tween
+	-- Determinate mode
 	local function updateDeterminate()
+		currentTweenInfo:set(TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out))
 		local val = props.value and Fusion.peek(props.value) or 0
 		goalPosition:set(UDim2.new(0, 0, 0.5, 0))
 		goalSize:set(UDim2.new(math.clamp(val, 0, 1), 0, 0, Tokens.trackHeight))
