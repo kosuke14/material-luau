@@ -6,7 +6,6 @@ local Icon = require(MaterialRoblox.Components.Icon);
 
 local Children = Fusion.Children;
 local OnEvent = Fusion.OnEvent;
-local OnChange = Fusion.OnChange;
 
 local function TextField(scope: Fusion.Scope, props: {
     placeholder: string?,
@@ -19,10 +18,7 @@ local function TextField(scope: Fusion.Scope, props: {
     trailingIcon: string?,
     supportingText: string?,
 })
-    local Tokens = TextFieldTokens(props.variant or "outlined");
     local variant = props.variant or "outlined";
-	local value = props.value or scope:Value("");
-	props.value = value
     local error = props.error or scope:Value(false);
     local disabled = props.disabled or scope:Value(false);
     local isFocused = scope:Value(false);
@@ -38,14 +34,27 @@ local function TextField(scope: Fusion.Scope, props: {
         return use(hasText) or use(isFocused)
     end)
 
+    local tokens = scope:Computed(function(use)
+        return TextFieldTokens(variant)
+    end)
+
+    local function setupTextBox(textBox: TextBox)
+        textBox:GetPropertyChangedSignal("Text"):Connect(function()
+            props.value:set(textBox.Text)
+        end)
+    end
+
     return scope:New("Frame") {
-        Size = UDim2.new(1, 0, 0, Tokens.containerHeight + (props.supportingText and 24 or 0)),
+        Size = UDim2.new(1, 0, 0, 56),
         BackgroundTransparency = 1,
 
         [Children] = {
             scope:New("Frame") {
-                Size = UDim2.new(1, 0, 0, Tokens.containerHeight),
-                BackgroundColor3 = variant == "filled" and Tokens.containerColor or Tokens.surfaceColor,
+                Size = UDim2.new(1, 0, 0, 56),
+                BackgroundColor3 = scope:Computed(function(use)
+                    local t = use(tokens)
+                    return variant == "filled" and t.containerColor or t.surfaceColor
+                end),
                 BackgroundTransparency = variant == "filled" and 0 or 1,
                 BorderSizePixel = 0,
 
@@ -59,17 +68,18 @@ local function TextField(scope: Fusion.Scope, props: {
 
                 [Children] = {
                     variant == "filled" and scope:New("UICorner") {
-                        CornerRadius = Tokens.containerShape
+                        CornerRadius = UDim.new(0, 4)
                     } or nil,
 
                     if variant == "outlined" then
                         scope:New("UIStroke") {
                             Color = scope:Computed(function(use)
-                                if use(disabled) then return Tokens.disabledOutlineColor
-                                elseif use(error) then return Tokens.errorOutlineColor
-                                elseif use(isFocused) then return Tokens.focusOutlineColor
-                                elseif use(isHovering) then return Tokens.hoverOutlineColor
-                                else return Tokens.outlineColor end
+                                local t = use(tokens)
+                                if use(disabled) then return t.disabledOutlineColor
+                                elseif use(error) then return t.errorOutlineColor
+                                elseif use(isFocused) then return t.focusOutlineColor
+                                elseif use(isHovering) then return t.hoverOutlineColor
+                                else return t.outlineColor end
                             end)
                         }
                     else nil,
@@ -94,6 +104,7 @@ local function TextField(scope: Fusion.Scope, props: {
 
                         Position = scope:Spring(
                             scope:Computed(function(use)
+                                local t = use(tokens)
                                 return use(isLabelFloated)
                                     and UDim2.new(0, hasLeadingIcon and 48 or 16, 0, 4)
                                     or UDim2.new(0, hasLeadingIcon and 48 or 16, 0.5, 0)
@@ -103,17 +114,19 @@ local function TextField(scope: Fusion.Scope, props: {
 
                         TextSize = scope:Spring(
                             scope:Computed(function(use)
-                                return use(isLabelFloated) and Tokens.labelPopulatedSize or Tokens.labelSize
+                                local t = use(tokens)
+                                return use(isLabelFloated) and t.labelPopulatedSize or t.labelSize
                             end),
                             37.4165738677, 0.9
                         ),
-                        FontFace = Tokens.labelFont,
+                        FontFace = Font.fromEnum(Enum.Font.Gotham),
 
                         TextColor3 = scope:Computed(function(use)
-                            if use(disabled) then return Tokens.disabledLabelColor
-                            elseif use(error) then return Tokens.labelErrorColor
-                            elseif use(isFocused) then return Tokens.labelFocusColor
-                            else return Tokens.labelColor end
+                            local t = use(tokens)
+                            if use(disabled) then return t.disabledLabelColor
+                            elseif use(error) then return t.labelErrorColor
+                            elseif use(isFocused) then return t.labelFocusColor
+                            else return t.labelColor end
                         end),
                     } or nil,
 
@@ -122,9 +135,12 @@ local function TextField(scope: Fusion.Scope, props: {
                         Position = UDim2.fromScale(0, 0),
                         BackgroundTransparency = 1,
                         Text = props.placeholder,
-                        FontFace = Tokens.inputFont,
-                        TextSize = Tokens.inputSize,
-                        TextColor3 = Tokens.placeholderColor,
+                        FontFace = Font.fromEnum(Enum.Font.Gotham),
+                        TextSize = 16,
+                        TextColor3 = scope:Computed(function(use)
+                            local t = use(tokens)
+                            return t.placeholderColor
+                        end),
                         TextXAlignment = Enum.TextXAlignment.Left,
                         TextTruncate = Enum.TextTruncate.AtEnd,
                         TextTransparency = scope:Computed(function(use)
@@ -150,20 +166,21 @@ local function TextField(scope: Fusion.Scope, props: {
                         ClearTextOnFocus = false,
                         Text = "",
                         PlaceholderText = "",
-                        FontFace = Tokens.inputFont,
-                        TextSize = Tokens.inputSize,
-                        TextColor3 = Tokens.inputColor,
+                        FontFace = Font.fromEnum(Enum.Font.Gotham),
+                        TextSize = 16,
+                        TextColor3 = scope:Computed(function(use)
+                            local t = use(tokens)
+                            return t.inputColor
+                        end),
                         TextXAlignment = Enum.TextXAlignment.Left,
 
                         [OnEvent "Focused"] = function(textBox)
                             isFocused:set(true)
+                            setupTextBox(textBox)
                         end,
                         [OnEvent "FocusLost"] = function(textBox)
                             isFocused:set(false)
                         end,
-						[OnChange "Text"] = function(text)
-							value:set(text)
-						end,
 
                         [Children] = {
                             scope:New("UIPadding") {
@@ -180,10 +197,11 @@ local function TextField(scope: Fusion.Scope, props: {
                         BackgroundTransparency = 1,
                         TextXAlignment = Enum.TextXAlignment.Left,
                         Text = props.supportingText,
-                        FontFace = Tokens.supportingTextFont,
-                        TextSize = Tokens.supportingTextSize,
+                        FontFace = Font.fromEnum(Enum.Font.Gotham),
+                        TextSize = 12,
                         TextColor3 = scope:Computed(function(use)
-                            return use(error) and Tokens.supportingTextErrorColor or Tokens.supportingTextColor
+                            local t = use(tokens)
+                            return use(error) and t.supportingTextErrorColor or t.supportingTextColor
                         end),
                     } or nil,
                 }

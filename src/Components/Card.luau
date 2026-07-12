@@ -1,20 +1,4 @@
 --!nonstrict
---[[
-	Material Design 3 Card Component
-	
-	Spec: https://m3.material.io/components/cards/specs
-	
-	Variants:
-	- Filled: Surface container highest background
-	- Outlined: Surface background with 1dp outline
-	- Elevated: Surface container high background with shadow
-	
-	State layers:
-	- Hover: 8% onSurface
-	- Pressed: 12% onSurface
-	- Dragged: 8% onSurface
-]]
-
 local MaterialRoblox = script.Parent.Parent;
 local Fusion = require(MaterialRoblox.Parent.Fusion);
 local CardTokens = require(MaterialRoblox.Tokens.Card);
@@ -27,17 +11,20 @@ local function Card(scope: Fusion.Scope, props: {
     onClick: (() -> ())?,
     [typeof(Fusion.Children)]: { Instance }?,
 })
-    local Tokens = CardTokens();
     local variant = props.variant or "filled";
     local isHovering = scope:Value(false);
     local isPressed = scope:Value(false);
 
-    -- Container background based on variant
+    local tokens = scope:Computed(function(use)
+        return CardTokens()
+    end)
+
     local containerColor = scope:Computed(function(use)
+        local t = use(tokens)
         if variant == "outlined" then
-            return Tokens.surfaceColor -- Surface
+            return t.surfaceColor
         else
-            return Tokens.containerColor -- Surface container highest
+            return t.containerColor
         end
     end)
 
@@ -65,28 +52,31 @@ local function Card(scope: Fusion.Scope, props: {
         end,
 
         [Children] = {
-            -- Corner radius (M3 spec: cornerMedium = 12dp)
             scope:New("UICorner") {
-                CornerRadius = Tokens.containerShape,
+                CornerRadius = UDim.new(0, 12),
             },
 
-            -- Outline for outlined variant
             if variant == "outlined" then
                 scope:New("UIStroke") {
-                    Thickness = Tokens.outlineWidth,
-                    Color = Tokens.outlineColor,
+                    Thickness = 1,
+                    Color = scope:Computed(function(use)
+                        local t = use(tokens)
+                        return t.outlineColor
+                    end),
                 }
             else nil,
 
-            -- State layer (M3 spec: hover 8%, pressed 12%)
             scope:New("Frame") {
                 Size = UDim2.fromScale(1, 1),
-                BackgroundColor3 = Tokens.stateLayerColor,
+                BackgroundColor3 = scope:Computed(function(use)
+                    local t = use(tokens)
+                    return t.stateLayerColor
+                end),
                 BackgroundTransparency = scope:Computed(function(use)
                     if use(isPressed) then
-                        return 1 - 0.12 -- 12% opacity when pressed
+                        return 1 - 0.12
                     elseif use(isHovering) then
-                        return 1 - 0.08 -- 8% opacity when hovering
+                        return 1 - 0.08
                     else
                         return 1
                     end
@@ -95,12 +85,11 @@ local function Card(scope: Fusion.Scope, props: {
 
                 [Children] = {
                     scope:New("UICorner") {
-                        CornerRadius = Tokens.containerShape,
+                        CornerRadius = UDim.new(0, 12),
                     },
                 }
             },
 
-            -- Content container with padding
             scope:New("Frame") {
                 Size = UDim2.new(1, 0, 0, 0),
                 AutomaticSize = Enum.AutomaticSize.Y,

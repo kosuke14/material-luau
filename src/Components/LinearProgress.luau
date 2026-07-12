@@ -10,14 +10,18 @@ local function LinearProgress(scope: Fusion.Scope, props: {
     indeterminate: Fusion.Value<boolean>?,
     value: Fusion.Value<number>?,
 })
-    local Tokens = LinearProgressTokens();
+    local tokens = scope:Computed(function(use)
+        return LinearProgressTokens()
+    end)
 
-    -- Create bar
     local bar = scope:New("Frame") {
         AnchorPoint = Vector2.new(0.5, 0),
         Position = UDim2.new(-0.5, 0, 0.5, 0),
-        Size = UDim2.new(0.5, 0, 0, Tokens.trackHeight),
-        BackgroundColor3 = Tokens.activeIndicatorColor,
+        Size = UDim2.new(0.5, 0, 0, 4),
+        BackgroundColor3 = scope:Computed(function(use)
+            local t = use(tokens)
+            return t.activeIndicatorColor
+        end),
         BorderSizePixel = 0,
 
         [Children] = {
@@ -27,18 +31,16 @@ local function LinearProgress(scope: Fusion.Scope, props: {
         }
     }
 
-    -- Determinate: tween width
     local function updateDeterminate()
+        local t = Fusion.peek(tokens)
         local val = props.value and Fusion.peek(props.value) or 0
         local width = math.clamp(val, 0, 1)
-        local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
-        TweenService:Create(bar, tweenInfo, {
-            Size = UDim2.new(width, 0, 0, Tokens.trackHeight),
+        TweenService:Create(bar, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
+            Size = UDim2.new(width, 0, 0, t.trackHeight),
             Position = UDim2.new(width / 2, 0, 0.5, 0),
         }):Play()
     end
 
-    -- Indeterminate: tween sequence
     local function runIndeterminate()
         local running = true
 
@@ -48,18 +50,18 @@ local function LinearProgress(scope: Fusion.Scope, props: {
 
         task.spawn(function()
             while running do
-                -- Reset instantly
-                bar.Size = UDim2.new(0.5, 0, 0, Tokens.trackHeight)
+                local t = Fusion.peek(tokens)
+
+                bar.Size = UDim2.new(0.5, 0, 0, t.trackHeight)
                 bar.Position = UDim2.new(-0.5, 0, 0.5, 0)
 
                 if not running then break end
 
-                -- Phase 1: Move right + grow
                 local tween1 = TweenService:Create(bar, TweenInfo.new(2.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
                     Position = UDim2.new(0.3, 0, 0.5, 0),
                 })
                 local tween2 = TweenService:Create(bar, TweenInfo.new(0.75, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), {
-                    Size = UDim2.new(0.75, 0, 0, Tokens.trackHeight),
+                    Size = UDim2.new(0.75, 0, 0, t.trackHeight),
                 })
                 tween1:Play()
                 tween2:Play()
@@ -67,9 +69,8 @@ local function LinearProgress(scope: Fusion.Scope, props: {
 
                 if not running then break end
 
-                -- Phase 2: Shrink + move off-screen
                 local tween3 = TweenService:Create(bar, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), {
-                    Size = UDim2.new(0.5, 0, 0, Tokens.trackHeight),
+                    Size = UDim2.new(0.5, 0, 0, t.trackHeight),
                 })
                 local tween4 = TweenService:Create(bar, TweenInfo.new(1.75, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
                     Position = UDim2.new(1.5, 0, 0.5, 0),
@@ -83,7 +84,6 @@ local function LinearProgress(scope: Fusion.Scope, props: {
         end)
     end
 
-    -- Handle mode switching
     if props.indeterminate then
         scope:Observer(props.indeterminate):onChange(function()
             if Fusion.peek(props.indeterminate) then
@@ -100,7 +100,6 @@ local function LinearProgress(scope: Fusion.Scope, props: {
         end
     end
 
-    -- Handle determinate value changes
     if props.value then
         scope:Observer(props.value):onChange(function()
             if not (props.indeterminate and Fusion.peek(props.indeterminate)) then
@@ -111,15 +110,17 @@ local function LinearProgress(scope: Fusion.Scope, props: {
     end
 
     return scope:New("Frame") {
-        Size = UDim2.new(1, 0, 0, Tokens.trackHeight),
+        Size = UDim2.new(1, 0, 0, 4),
         BackgroundTransparency = 1,
         ClipsDescendants = true,
 
         [Children] = {
-            -- Track
             scope:New("Frame") {
                 Size = UDim2.fromScale(1, 1),
-                BackgroundColor3 = Tokens.trackColor,
+                BackgroundColor3 = scope:Computed(function(use)
+                    local t = use(tokens)
+                    return t.trackColor
+                end),
                 BorderSizePixel = 0,
                 [Children] = {
                     scope:New("UICorner") {

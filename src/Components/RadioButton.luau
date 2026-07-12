@@ -12,11 +12,14 @@ local function RadioButton(scope: Fusion.Scope, props: {
     disabled: Fusion.Value<boolean>?,
     onClick: (() -> ())?
 })
-    local Tokens = RadioButtonTokens();
     local disabled = props.disabled or scope:Value(false);
 
+    local tokens = scope:Computed(function(use)
+        return RadioButtonTokens()
+    end)
+
     return scope:New("ImageButton") {
-        Size = UDim2.fromOffset(Tokens.stateLayerSize, Tokens.stateLayerSize),
+        Size = UDim2.fromOffset(40, 40),
         BackgroundTransparency = 1,
         ImageTransparency = 1,
         AutoButtonColor = false,
@@ -33,7 +36,7 @@ local function RadioButton(scope: Fusion.Scope, props: {
             }),
 
             scope:New("Frame") {
-                Size = UDim2.fromOffset(Tokens.iconSize, Tokens.iconSize),
+                Size = UDim2.fromOffset(20, 20),
                 AnchorPoint = Vector2.new(0.5, 0.5),
                 Position = UDim2.fromScale(0.5, 0.5),
                 BackgroundTransparency = 1,
@@ -42,10 +45,11 @@ local function RadioButton(scope: Fusion.Scope, props: {
                     scope:New("UIStroke") {
                         Thickness = 2,
                         Color = scope:Computed(function(use)
+                            local t = use(tokens)
                             if use(disabled) then
-                                return use(props.active) and Tokens.disabledSelectedIconColor or Tokens.disabledUnselectedIconColor
+                                return use(props.active) and t.disabledSelectedIconColor or t.disabledUnselectedIconColor
                             else
-                                return use(props.active) and Tokens.selectedIconColor or Tokens.unselectedIconColor
+                                return use(props.active) and t.selectedIconColor or t.unselectedIconColor
                             end
                         end)
                     },
@@ -58,10 +62,11 @@ local function RadioButton(scope: Fusion.Scope, props: {
                         AnchorPoint = Vector2.new(0.5, 0.5),
                         Position = UDim2.fromScale(0.5, 0.5),
                         BackgroundColor3 = scope:Computed(function(use)
+                            local t = use(tokens)
                             if use(disabled) then
-                                return Tokens.disabledSelectedIconColor
+                                return t.disabledSelectedIconColor
                             else
-                                return use(props.active) and Tokens.selectedIconColor or Tokens.unselectedIconColor
+                                return use(props.active) and t.selectedIconColor or t.unselectedIconColor
                             end
                         end),
 

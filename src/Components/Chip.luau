@@ -15,16 +15,21 @@ local function Chip(scope: Fusion.Scope, props: {
     onClick: (() -> ())?,
     disabled: Fusion.Value<boolean>?,
 })
-    local Tokens = ChipTokens();
     local selected = props.selected or scope:Value(false);
     local disabled = props.disabled or scope:Value(false);
     local hasIcon = props.icon ~= nil;
 
+    -- Reactive tokens
+    local tokens = scope:Computed(function(use)
+        return ChipTokens()
+    end)
+
     return scope:New("ImageButton") {
-        Size = UDim2.new(0, 0, 0, Tokens.containerHeight),
+        Size = UDim2.new(0, 0, 0, 32),
         AutomaticSize = Enum.AutomaticSize.X,
         BackgroundColor3 = scope:Computed(function(use)
-            return use(selected) and Tokens.selectedContainerColor or Tokens.surfaceColor
+            local t = use(tokens)
+            return use(selected) and t.selectedContainerColor or t.surfaceColor
         end),
         BackgroundTransparency = scope:Computed(function(use)
             return use(selected) and 0 or 1
@@ -41,18 +46,22 @@ local function Chip(scope: Fusion.Scope, props: {
 
         [Children] = {
             scope:New("UICorner") {
-                CornerRadius = Tokens.containerShape,
+                CornerRadius = UDim.new(0, 8),
             },
 
             scope:New("UIStroke") {
                 Thickness = scope:Computed(function(use)
-                    return use(selected) and 0 or Tokens.outlineWidth
+                    local t = use(tokens)
+                    return use(selected) and 0 or t.outlineWidth
                 end),
-                Color = Tokens.unselectedOutlineColor,
+                Color = scope:Computed(function(use)
+                    local t = use(tokens)
+                    return t.unselectedOutlineColor
+                end),
             },
 
             Ripple(scope, {
-                borderRadius = Tokens.containerShape,
+                borderRadius = UDim.new(0, 8),
             }),
 
             scope:New("Frame") {
@@ -73,9 +82,10 @@ local function Chip(scope: Fusion.Scope, props: {
                     },
 
                     hasIcon and scope:Hydrate(Icon(scope, { icon = props.icon })) {
-                        Size = UDim2.fromOffset(Tokens.iconSize, Tokens.iconSize),
+                        Size = UDim2.fromOffset(18, 18),
                         ImageColor3 = scope:Computed(function(use)
-                            return use(selected) and Tokens.selectedIconColor or Tokens.unselectedIconColor
+                            local t = use(tokens)
+                            return use(selected) and t.selectedIconColor or t.unselectedIconColor
                         end),
                     } or nil,
 
@@ -84,10 +94,11 @@ local function Chip(scope: Fusion.Scope, props: {
                         AutomaticSize = Enum.AutomaticSize.X,
                         BackgroundTransparency = 1,
                         Text = props.label,
-                        FontFace = Tokens.labelFont,
-                        TextSize = Tokens.labelSize,
+                        FontFace = Font.fromEnum(Enum.Font.GothamMedium),
+                        TextSize = 14,
                         TextColor3 = scope:Computed(function(use)
-                            return use(selected) and Tokens.selectedLabelColor or Tokens.unselectedLabelColor
+                            local t = use(tokens)
+                            return use(selected) and t.selectedLabelColor or t.unselectedLabelColor
                         end),
                         TextXAlignment = Enum.TextXAlignment.Center,
                     },

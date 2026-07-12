@@ -15,14 +15,17 @@ local function Checkbox(scope: Fusion.Scope, props: {
     disabled: Fusion.Value<boolean>?,
     onClick: (() -> ())?
 })
-    local Tokens = CheckboxTokens();
     local isHovering = scope:Value(false);
     local isPressed = scope:Value(false);
     local error = props.error or scope:Value(false);
     local disabled = props.disabled or scope:Value(false);
 
+    local tokens = scope:Computed(function(use)
+        return CheckboxTokens()
+    end)
+
     return scope:New("ImageButton") {
-        Size = UDim2.fromOffset(Tokens.stateLayerSize, Tokens.stateLayerSize),
+        Size = UDim2.fromOffset(40, 40),
         BackgroundTransparency = 1,
         ImageTransparency = 1,
         AutoButtonColor = false,
@@ -52,18 +55,19 @@ local function Checkbox(scope: Fusion.Scope, props: {
 
         [Children] = {
             Ripple(scope, {
-                borderRadius = Tokens.stateLayerShape,
+                borderRadius = UDim.new(1, 0),
             }),
 
             scope:New("Frame") {
-                Size = UDim2.fromOffset(Tokens.containerWidth, Tokens.containerHeight),
+                Size = UDim2.fromOffset(18, 18),
                 AnchorPoint = Vector2.new(0.5, 0.5),
                 Position = UDim2.fromScale(0.5, 0.5),
                 BackgroundColor3 = scope:Computed(function(use)
+                    local t = use(tokens)
                     if use(props.active) then
-                        return use(error) and Tokens.errorContainerColor or Tokens.selectedContainerColor
+                        return use(error) and t.errorContainerColor or t.selectedContainerColor
                     else
-                        return Tokens.surfaceColor
+                        return t.surfaceColor
                     end
                 end),
                 BackgroundTransparency = scope:Computed(function(use)
@@ -79,9 +83,10 @@ local function Checkbox(scope: Fusion.Scope, props: {
                         return not use(props.active)
                     end), function()
                         return scope:New("UIStroke") {
-                            Thickness = Tokens.unselectedOutlineWidth,
+                            Thickness = 2,
                             Color = scope:Computed(function(use)
-                                return use(error) and Tokens.errorOutlineColor or Tokens.unselectedOutlineColor
+                                local t = use(tokens)
+                                return use(error) and t.errorOutlineColor or t.unselectedOutlineColor
                             end)
                         }
                     end),
@@ -93,11 +98,12 @@ local function Checkbox(scope: Fusion.Scope, props: {
                             icon = "check",
                             fill = true,
                         })) {
-                            Size = UDim2.fromOffset(Tokens.iconSize, Tokens.iconSize),
+                            Size = UDim2.fromOffset(18, 18),
                             AnchorPoint = Vector2.new(0.5, 0.5),
                             Position = UDim2.fromScale(0.5, 0.5),
                             ImageColor3 = scope:Computed(function(use)
-                                return use(error) and Tokens.errorIconColor or Tokens.selectedIconColor
+                                local t = use(tokens)
+                                return use(error) and t.errorIconColor or t.selectedIconColor
                             end),
                         }
                     end),
@@ -107,4 +113,4 @@ local function Checkbox(scope: Fusion.Scope, props: {
     }
 end
 
-return Checkbox
+return Checkbox;

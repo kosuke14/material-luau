@@ -14,11 +14,16 @@ local function FloatingActionButton(scope: Fusion.Scope, props: {
     variant: "primary" | "secondary" | "tertiary" | "surface"?,
     size: "small" | "medium" | "large"?,
 })
-    local Tokens = FABTokens(props.variant, props.size);
+    local tokens = scope:Computed(function(use)
+        return FABTokens(props.variant, props.size)
+    end)
 
     return scope:New("ImageButton") {
-        Size = UDim2.fromOffset(Tokens.containerWidth, Tokens.containerHeight),
-        BackgroundColor3 = Tokens.containerColor,
+        Size = UDim2.new(0, 56, 0, 56),
+        BackgroundColor3 = scope:Computed(function(use)
+            local t = use(tokens)
+            return t.containerColor
+        end),
         ImageTransparency = 1,
         AutoButtonColor = false,
 
@@ -26,20 +31,23 @@ local function FloatingActionButton(scope: Fusion.Scope, props: {
 
         [Children] = {
             scope:New("UICorner") {
-                CornerRadius = Tokens.containerShape,
+                CornerRadius = UDim.new(0, 16),
             },
 
             Ripple(scope, {
-                borderRadius = Tokens.containerShape,
+                borderRadius = UDim.new(0, 16),
             }),
 
             scope:Hydrate(Icon(scope, {
                 icon = props.icon,
             })) {
-                Size = UDim2.fromOffset(Tokens.iconSize, Tokens.iconSize),
+                Size = UDim2.fromOffset(24, 24),
                 AnchorPoint = Vector2.new(0.5, 0.5),
                 Position = UDim2.fromScale(0.5, 0.5),
-                ImageColor3 = Tokens.iconColor,
+                ImageColor3 = scope:Computed(function(use)
+                    local t = use(tokens)
+                    return t.iconColor
+                end),
             }
         }
     }
