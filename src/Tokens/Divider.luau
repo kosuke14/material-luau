@@ -1,16 +1,14 @@
 --!strict
 local MaterialRoblox = script.Parent.Parent;
 local Theming = require(MaterialRoblox.Utils.Theming);
-local DividerTokens = require(MaterialRoblox.Tokens._internal.divider);
 
 local function getTokens()
-    local theme = Theming:now();
-    local tokens = DividerTokens(theme);
+	local theme = Theming:now();
 
-    return {
-        color = tokens.color,
-        thickness = tokens.thickness,
-    }
+	return {
+		color = theme.color.outlineVariant,
+		thickness = 1,
+	}
 end
 
 return getTokens

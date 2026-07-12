@@ -3,8 +3,7 @@ local MaterialRoblox = script.Parent.Parent;
 
 local Fusion = require(MaterialRoblox.Parent.Fusion);
 local Icons = require(MaterialRoblox.Parent['material-symbols-roblox']);
-
-local DEFAULT_COLOR = Color3.fromHex("#1C1B1F");
+local Theming = require(MaterialRoblox.Utils.Theming);
 
 local function Icon(
 	scope: Fusion.Scope,
@@ -23,7 +22,14 @@ local function Icon(
 				[use(props.fill or false) and "filled" or "outlined"]
 				[props.icon];
 		end),
-		ImageColor3 = props.color or DEFAULT_COLOR,
+		ImageColor3 = scope:Computed(function(use)
+			if props.color then
+				return use(props.color)
+			else
+				local theme = Theming:now();
+				return theme.color.onSurface;
+			end
+		end),
 		BackgroundTransparency = 1
 	}
 end

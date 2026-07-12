@@ -4,16 +4,16 @@ local Theming = require(MaterialRoblox.Utils.Theming);
 local TooltipTokens = require(MaterialRoblox.Tokens._internal.tooltips);
 
 local function getTokens()
-    local theme = Theming:now();
-    local tokens = TooltipTokens(theme);
+	local theme = Theming:now();
+	local tokens = TooltipTokens(theme);
 
-    return {
-        containerColor = tokens.container.color,
-        containerShape = tokens.container.shape,
-        supportingTextFont = tokens["supporting-text"].font,
-        supportingTextSize = tokens["supporting-text"].size,
-        supportingTextColor = tokens["supporting-text"].color,
-    }
+	return {
+		containerColor = theme.color.inverseSurface,
+		containerShape = tokens.container.shape,
+		supportingTextFont = tokens["supporting-text"].font,
+		supportingTextSize = tokens["supporting-text"].size,
+		supportingTextColor = theme.color.inverseOnSurface,
+	}
 end
 
 return getTokens
