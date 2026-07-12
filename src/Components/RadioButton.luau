@@ -54,7 +54,6 @@ local function RadioButton(
 
 		[OnEvent "MouseButton1Click"] = function()
 			if not Fusion.peek(disabled) then
-				props.active:set(true)
 				if props.onClick then
 					props.onClick()
 				end
