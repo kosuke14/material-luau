@@ -6,11 +6,15 @@ local LinearProgressTokens = require(MaterialRoblox.Tokens.LinearProgress);
 
 local Children = Fusion.Children;
 
--- M3 indeterminate: short (600ms) and long (1500ms) easings alternate
-local SHORT_DURATION = 0.6;
-local LONG_DURATION = 1.5;
-local TWEEN_INFO_SHORT = TweenInfo.new(SHORT_DURATION, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out);
-local TWEEN_INFO_LONG = TweenInfo.new(LONG_DURATION, Enum.EasingStyle.Exponential, Enum.EasingDirection.InOut);
+local QUINT_OUT = TweenInfo.new(0, Enum.EasingStyle.Quint, Enum.EasingDirection.Out);
+local QUINT_INOUT = TweenInfo.new(0, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut);
+
+local function tween(bar: Frame, time: number, style: EnumItem, direction: EnumItem, goals: {[string]: any})
+    local info = TweenInfo.new(time, style, direction)
+    local t = TweenService:Create(bar, info, goals)
+    t:Play()
+    return t.Completed
+end
 
 local function LinearProgress(scope: Fusion.Scope, props: {
     indeterminate: Fusion.Value<boolean>?,
@@ -18,59 +22,59 @@ local function LinearProgress(scope: Fusion.Scope, props: {
 })
     local Tokens = LinearProgressTokens();
 
-    -- Determinate mode
-    local function updateDeterminate(bar, use)
-        local val = props.value and use(props.value) or 0
-        local width = math.clamp(val, 0, 1)
+    -- Determinate
+    local function updateDeterminate(bar: Frame)
+        local val = props.value and Fusion.peek(props.value) or 0
         bar.AnchorPoint = Vector2.new(0, 0.5)
-        bar.Size = UDim2.new(width, 0, 0, Tokens.trackThickness)
         bar.Position = UDim2.new(0, 0, 0.5, 0)
+        bar.Size = UDim2.new(math.clamp(val, 0, 1), 0, 0, Tokens.trackThickness)
     end
 
-    -- Indeterminate mode: tween loop
-    local function runIndeterminate(bar)
+    -- Indeterminate loop
+    local function runIndeterminate(bar: Frame)
         local running = true
 
-        local function cleanup()
+        table.insert(scope, function()
             running = false
-        end
-
-        table.insert(scope, cleanup)
+        end)
 
         task.spawn(function()
             while running do
-                -- Short easing: grow from left, bar appears from off-screen
-                bar.AnchorPoint = Vector2.new(1, 0.5)
+                -- Reset to start
+                bar.AnchorPoint = Vector2.new(0.5, 0.5)
                 bar.Position = UDim2.new(0, 0, 0.5, 0)
-                bar.Size = UDim2.new(0, 0, 0, Tokens.trackThickness)
+                bar.Size = UDim2.new(0.5, 0, 0, Tokens.trackThickness)
 
-                local tweenShort = TweenService:Create(bar, TWEEN_INFO_SHORT, {
-                    AnchorPoint = Vector2.new(0, 0.5),
-                    Position = UDim2.new(1, 0, 0.5, 0),
-                    Size = UDim2.new(0.6, 0, 0, Tokens.trackThickness),
+                -- Phase 1: Grow size + move right
+                task.spawn(function()
+                    tween(bar, 0.75, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut, {
+                        Size = UDim2.new(0.75, 0, 0, Tokens.trackThickness)
+                    })
+                end)
+                tween(bar, 2.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {
+                    Position = UDim2.new(0.3, 0, 0.5, 0)
                 })
-                tweenShort:Play()
-                tweenShort.Completed:Wait()
+                task.wait(0.75)
 
                 if not running then break end
 
-                bar.AnchorPoint = Vector2.new(1, 0.5)
-                bar.Position = UDim2.new(0, 0, 0.5, 0)
-                -- Long easing: translate to right while shrinking
-                local tweenLong = TweenService:Create(bar, TWEEN_INFO_LONG, {
-                    AnchorPoint = Vector2.new(0, 0.5),
-                    Position = UDim2.new(1, 0, 0.5, 0),
-                    Size = UDim2.new(0.25, 0, 0, Tokens.trackThickness),
+                -- Phase 2: Shrink size + move off-screen
+                task.spawn(function()
+                    tween(bar, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut, {
+                        Size = UDim2.new(0.5, 0, 0, Tokens.trackThickness)
+                    })
+                end)
+                tween(bar, 1.75, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {
+                    Position = UDim2.new(1.5, 0, 0.5, 0)
                 })
-                tweenLong:Play()
-                tweenLong.Completed:Wait()
+                task.wait(0.5)
 
                 if not running then break end
             end
         end)
     end
 
-    -- Setup bar
+    -- Create bar
     local bar = scope:New("Frame") {
         AnchorPoint = Vector2.new(0, 0.5),
         Position = UDim2.new(0, 0, 0.5, 0),
@@ -91,14 +95,14 @@ local function LinearProgress(scope: Fusion.Scope, props: {
             if Fusion.peek(props.indeterminate) then
                 runIndeterminate(bar)
             else
-                updateDeterminate(bar, Fusion.peek)
+                updateDeterminate(bar)
             end
         end)
 
         if Fusion.peek(props.indeterminate) then
             runIndeterminate(bar)
         else
-            updateDeterminate(bar, Fusion.peek)
+            updateDeterminate(bar)
         end
     end
 
@@ -106,10 +110,10 @@ local function LinearProgress(scope: Fusion.Scope, props: {
     if props.value then
         scope:Observer(props.value):onChange(function()
             if not (props.indeterminate and Fusion.peek(props.indeterminate)) then
-                updateDeterminate(bar, Fusion.peek)
+                updateDeterminate(bar)
             end
         end)
-        updateDeterminate(bar, Fusion.peek)
+        updateDeterminate(bar)
     end
 
     return scope:New("Frame") {
