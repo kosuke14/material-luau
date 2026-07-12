@@ -72,7 +72,7 @@ local function getInitialTabSize(
 
 	getTextBoundsParams.Text = text;
 	getTextBoundsParams.Font = Tokens.labelFont.font;
-	getTextBoundsParams.Size = Tokens.labelFont.fontSize;
+	getTextBoundsParams.Size = Tokens.labelFont.size;
 
 	return math.max(ICON_WIDTH, TextService:GetTextBoundsAsync(getTextBoundsParams).X);
 end
