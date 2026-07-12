@@ -35,11 +35,7 @@ local function TextField(scope: Fusion.Scope, props: {
         return use(hasText) or use(isFocused)
     end)
 
-    local function setupTextBox(textBox: TextBox)
-        textBox:GetPropertyChangedSignal("Text"):Connect(function()
-            props.value:set(textBox.Text)
-        end)
-    end
+    local connected = false
 
     return scope:New("Frame") {
         Size = UDim2.new(1, 0, 0, Tokens.containerHeight + (props.supportingText and 24 or 0)),
@@ -160,11 +156,15 @@ local function TextField(scope: Fusion.Scope, props: {
 
                         [OnEvent "Focused"] = function(textBox)
                             isFocused:set(true)
-                            setupTextBox(textBox)
+                            if not connected then
+                                connected = true
+                                textBox:GetPropertyChangedSignal("Text"):Connect(function()
+                                    props.value:set(textBox.Text)
+                                end)
+                            end
                         end,
                         [OnEvent "FocusLost"] = function(textBox)
                             isFocused:set(false)
-                            props.value:set(textBox.Text)
                         end,
 
                         [Children] = {
