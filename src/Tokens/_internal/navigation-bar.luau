@@ -2,7 +2,7 @@
 -- !!! THIS FILE WAS AUTOMATICALLY GENERATED !!!
 -- !!! DO NOT MODIFY IT BY HAND !!!
 -- Design system display name: Google Material 3
--- Token revision id: af25
+-- Token revision id: 7989
 
 local function getTokens(theme)
     return {
@@ -65,7 +65,6 @@ local function getTokens(theme)
                 }
             }
         },
-        ["between-space"] = nil,
         ["active-indicator"] = {
             shape = theme.shape.cornerFull,
             ["icon-label-space"] = 4
@@ -79,11 +78,7 @@ local function getTokens(theme)
             },
             ["active-indicator"] = {
                 height = 32,
-                width = 56,
-                ["icon-label-space"] = 4
-            },
-            container = {
-                ["between-space"] = 6
+                width = 56
             }
         },
         horizontal = {
@@ -91,14 +86,17 @@ local function getTokens(theme)
                 font = theme.typography.label.medium
             },
             ["active-indicator"] = {
-                height = 40,
-                ["leading-space"] = 16,
-                ["trailing-space"] = 16,
-                ["icon-label-space"] = 4
+                height = 40
             }
         }
     },
     sys = {
+        measurement = {
+            space0 = nil,
+            space75 = 6,
+            space50 = 4,
+            space200 = 16
+        },
         state = {
             ["focus-indicator"] = {
                 ["inner-offset"] = -3,

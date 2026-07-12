@@ -1,10 +1,20 @@
+
 -- !!! THIS FILE WAS AUTOMATICALLY GENERATED !!!
 -- !!! DO NOT MODIFY IT BY HAND !!!
 -- Design system display name: Google Material 3
--- Token revision id: af25
+-- Token revision id: 7989
 
 local function getTokens(theme)
     return {
+    sys = {
+        measurement = {
+            space200 = 16,
+            space50 = 4,
+            space100 = 8,
+            space75 = 6,
+            space500 = 40
+        }
+    },
     expanded = {
         modal = {
             container = {
@@ -32,9 +42,6 @@ local function getTokens(theme)
             width = 96,
             shape = theme.shape.cornerNone
         },
-        item = {
-            ["vertical-space"] = 4
-        },
         ["top-space"] = 44,
         narrow = {
             container = {
@@ -47,17 +54,12 @@ local function getTokens(theme)
             size = 24
         },
         ["active-indicator"] = {
-            shape = theme.shape.cornerFull,
-            ["leading-space"] = 16,
-            ["icon-label-space"] = 8,
-            ["trailing-space"] = 16
+            shape = theme.shape.cornerFull
         },
         container = {
             height = 64,
-            ["vertical-space"] = 6,
             shape = theme.shape.cornerNone
         },
-        ["header-space-minimum"] = 40,
         short = {
             container = {
                 height = 56
@@ -117,12 +119,9 @@ local function getTokens(theme)
                 height = 32,
                 width = 56
             },
-            ["icon-label-space"] = 4,
-            ["trailing-space"] = 16,
             ["label-text"] = {
                 font = theme.typography.label.medium
-            },
-            ["leading-space"] = 16
+            }
         },
         horizontal = {
             ["label-text"] = {
@@ -130,12 +129,7 @@ local function getTokens(theme)
             },
             ["active-indicator"] = {
                 height = 56
-            },
-            ["full-width"] = {
-                ["leading-space"] = 16,
-                ["trailing-space"] = 16
-            },
-            ["icon-label-space"] = 8
+            }
         }
     },
     menu = {

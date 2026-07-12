@@ -2,40 +2,22 @@
 -- !!! THIS FILE WAS AUTOMATICALLY GENERATED !!!
 -- !!! DO NOT MODIFY IT BY HAND !!!
 -- Design system display name: Google Material 3
--- Token revision id: af25
+-- Token revision id: 7989
 
 local function getTokens(theme)
     return {
-    sys = {
-        state = {
-            ["focus-indicator"] = {
-                ["outer-offset"] = 2,
-                thickness = 3
-            }
-        }
-    },
-    focus = {
-        indicator = {
-            color = theme.color.secondary
-        }
-    },
-    container = {
-        width = 18,
-        height = 18,
-        size = 18
-    },
     unselected = {
         error = {
+            focus = {
+                outline = {
+                    color = theme.color.error,
+                    width = 2
+                }
+            },
             outline = {
                 color = theme.color.error
             },
             pressed = {
-                outline = {
-                    width = 2,
-                    color = theme.color.error
-                }
-            },
-            focus = {
                 outline = {
                     width = 2,
                     color = theme.color.error
@@ -97,6 +79,24 @@ local function getTokens(theme)
                 color = theme.color.onSurface
             }
         }
+    },
+    sys = {
+        state = {
+            ["focus-indicator"] = {
+                ["outer-offset"] = 2,
+                thickness = 3
+            }
+        }
+    },
+    focus = {
+        indicator = {
+            color = theme.color.secondary
+        }
+    },
+    container = {
+        width = 18,
+        height = 18,
+        size = 18
     },
     selected = {
         error = {

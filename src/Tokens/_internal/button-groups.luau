@@ -2,7 +2,7 @@
 -- !!! THIS FILE WAS AUTOMATICALLY GENERATED !!!
 -- !!! DO NOT MODIFY IT BY HAND !!!
 -- Design system display name: Google Material 3
--- Token revision id: af25
+-- Token revision id: 7989
 
 local function getTokens(theme)
     return {
@@ -24,8 +24,7 @@ local function getTokens(theme)
             container = {
                 height = 136,
                 shape = theme.shape.cornerFull
-            },
-            ["between-space"] = 2
+            }
         },
         large = {
             pressed = {
@@ -44,8 +43,7 @@ local function getTokens(theme)
             container = {
                 height = 96,
                 shape = theme.shape.cornerFull
-            },
-            ["between-space"] = 2
+            }
         },
         medium = {
             selected = {
@@ -64,8 +62,7 @@ local function getTokens(theme)
             container = {
                 height = 56,
                 shape = theme.shape.cornerFull
-            },
-            ["between-space"] = 2
+            }
         },
         small = {
             selected = {
@@ -84,8 +81,7 @@ local function getTokens(theme)
             container = {
                 height = 40,
                 shape = theme.shape.cornerFull
-            },
-            ["between-space"] = 2
+            }
         },
         xsmall = {
             selected = {
@@ -104,8 +100,7 @@ local function getTokens(theme)
             container = {
                 height = 32,
                 shape = theme.shape.cornerFull
-            },
-            ["between-space"] = 2
+            }
         }
     },
     sys = {
@@ -117,6 +112,11 @@ local function getTokens(theme)
                 ["extra-small"] = 4,
                 small = 8
             }
+        },
+        measurement = {
+            space25 = 2,
+            space150 = 12,
+            space100 = 8
         }
     },
     standard = {
@@ -143,8 +143,7 @@ local function getTokens(theme)
             },
             container = {
                 height = 40
-            },
-            ["between-space"] = 12
+            }
         },
         medium = {
             pressed = {
@@ -156,8 +155,7 @@ local function getTokens(theme)
             },
             container = {
                 height = 56
-            },
-            ["between-space"] = 8
+            }
         },
         large = {
             pressed = {
@@ -169,8 +167,7 @@ local function getTokens(theme)
             },
             container = {
                 height = 96
-            },
-            ["between-space"] = 8
+            }
         },
         xlarge = {
             pressed = {
@@ -182,8 +179,7 @@ local function getTokens(theme)
             },
             container = {
                 height = 136
-            },
-            ["between-space"] = 8
+            }
         }
     }
 }

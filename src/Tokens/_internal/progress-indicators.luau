@@ -2,10 +2,53 @@
 -- !!! THIS FILE WAS AUTOMATICALLY GENERATED !!!
 -- !!! DO NOT MODIFY IT BY HAND !!!
 -- Design system display name: Google Material 3
--- Token revision id: af25
+-- Token revision id: 7989
 
 local function getTokens(theme)
     return {
+    linear = {
+        indeterminate = {
+            ["active-indicator"] = {
+                wave = {
+                    wavelength = 20
+                }
+            }
+        },
+        height = 4,
+        ["with-wave"] = {
+            height = 10
+        },
+        ["active-indicator"] = {
+            thickness = 4,
+            wave = {
+                amplitude = 3,
+                wavelength = 40
+            }
+        },
+        track = {
+            thickness = 4
+        },
+        ["stop-indicator"] = {
+            size = 4
+        },
+        thick = {
+            height = 8,
+            ["with-wave"] = {
+                height = 14
+            },
+            ["active-indicator"] = {
+                thickness = 8
+            },
+            track = {
+                thickness = 8
+            },
+            ["stop-indicator"] = {
+                size = 4,
+                ["trailing-space"] = 2
+            },
+            ["track-active-indicator-space"] = 4
+        }
+    },
     ["active-indicator"] = {
         color = theme.color.primary,
         shape = theme.shape.cornerNone,
@@ -25,49 +68,10 @@ local function getTokens(theme)
         size = 4
     },
     ["active-indicator-track-space"] = 4,
-    linear = {
-        height = 4,
-        ["with-wave"] = {
-            height = 10
-        },
-        ["active-indicator"] = {
-            thickness = 4,
-            wave = {
-                amplitude = 3,
-                wavelength = 40
-            }
-        },
-        track = {
-            thickness = 4
-        },
-        ["stop-indicator"] = {
-            size = 4,
-            ["trailing-space"] = nil
-        },
-        ["track-active-indicator-space"] = 4,
-        thick = {
-            height = 8,
-            ["with-wave"] = {
-                height = 14
-            },
-            ["active-indicator"] = {
-                thickness = 8
-            },
-            track = {
-                thickness = 8
-            },
-            ["stop-indicator"] = {
-                size = 4,
-                ["trailing-space"] = 2
-            },
-            ["track-active-indicator-space"] = 4
-        },
-        indeterminate = {
-            ["active-indicator"] = {
-                wave = {
-                    wavelength = 20
-                }
-            }
+    sys = {
+        measurement = {
+            space0 = nil,
+            space50 = 4
         }
     },
     circular = {
@@ -79,7 +83,6 @@ local function getTokens(theme)
                 wavelength = 15
             }
         },
-        ["track-active-indicator-space"] = 4,
         track = {
             thickness = 4
         },

@@ -2,7 +2,7 @@
 -- !!! THIS FILE WAS AUTOMATICALLY GENERATED !!!
 -- !!! DO NOT MODIFY IT BY HAND !!!
 -- Design system display name: Google Material 3
--- Token revision id: af25
+-- Token revision id: 7989
 
 local function getTokens(theme)
     return {
@@ -93,7 +93,7 @@ local function getTokens(theme)
         },
         pressed = {
             icon = {
-                color = theme.color.onPrimaryContainer
+                color = theme.color.primary
             },
             ["state-layer"] = {
                 color = theme.color.primary
@@ -107,7 +107,7 @@ local function getTokens(theme)
         },
         focus = {
             icon = {
-                color = theme.color.onPrimaryContainer
+                color = theme.color.primary
             },
             ["state-layer"] = {
                 color = theme.color.primary
@@ -121,7 +121,7 @@ local function getTokens(theme)
         },
         hover = {
             icon = {
-                color = theme.color.onPrimaryContainer
+                color = theme.color.primary
             },
             ["state-layer"] = {
                 color = theme.color.primary
@@ -140,7 +140,7 @@ local function getTokens(theme)
         },
         icon = {
             size = 16,
-            color = theme.color.onPrimaryContainer
+            color = theme.color.primary
         }
     },
     track = {

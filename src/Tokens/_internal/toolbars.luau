@@ -2,7 +2,7 @@
 -- !!! THIS FILE WAS AUTOMATICALLY GENERATED !!!
 -- !!! DO NOT MODIFY IT BY HAND !!!
 -- Design system display name: Google Material 3
--- Token revision id: af25
+-- Token revision id: 7989
 
 local function getTokens(theme)
     return {
@@ -130,7 +130,6 @@ local function getTokens(theme)
                 width = 56,
                 height = 56
             },
-            ["between-space"] = 8,
             vibrant = {
                 icon = {
                     color = theme.color.onTertiaryContainer
@@ -150,21 +149,16 @@ local function getTokens(theme)
         },
         vertical = {
             container = {
-                width = 64,
-                ["external-space"] = 24
+                width = 64
             }
         },
         horizontal = {
             container = {
-                height = 64,
-                ["external-space"] = 16
+                height = 64
             }
         },
         container = {
-            ["leading-space"] = 8,
-            ["between-space"] = 4,
             ["external-padding"] = 16,
-            ["trailing-space"] = 8,
             height = 64,
             shape = theme.shape.cornerFull
         },
@@ -198,6 +192,17 @@ local function getTokens(theme)
             container = {
                 color = theme.color.surfaceContainer
             }
+        }
+    },
+    sys = {
+        measurement = {
+            space100 = 8,
+            space50 = 4,
+            space200 = 16,
+            space300 = 24
+        },
+        color = {
+            ["surface-tint"] = theme.color.primary
         }
     },
     standard = {
@@ -308,8 +313,6 @@ local function getTokens(theme)
         container = {
             color = theme.color.surfaceContainer,
             height = 64,
-            ["leading-space"] = 16,
-            ["trailing-space"] = 16,
             ["max-spacing"] = 32,
             ["min-spacing"] = 4,
             shape = theme.shape.cornerNone
@@ -322,11 +325,6 @@ local function getTokens(theme)
         height = 80,
         shape = theme.shape.cornerNone,
         color = theme.color.surfaceContainer
-    },
-    sys = {
-        color = {
-            ["surface-tint"] = theme.color.primary
-        }
     },
     ["with-fab"] = {
         container = {

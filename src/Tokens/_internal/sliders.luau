@@ -2,10 +2,31 @@
 -- !!! THIS FILE WAS AUTOMATICALLY GENERATED !!!
 -- !!! DO NOT MODIFY IT BY HAND !!!
 -- Design system display name: Google Material 3
--- Token revision id: af25
+-- Token revision id: 7989
 
 local function getTokens(theme)
     return {
+    active = {
+        handle = {
+            color = theme.color.primary,
+            shape = theme.shape.cornerFull,
+            width = 4,
+            height = 44
+        },
+        track = {
+            ["outer-corner"] = {
+                ["corner-size"] = theme.shape.cornerFull
+            },
+            color = theme.color.primary,
+            shape = theme.shape.cornerFull,
+            height = 16
+        },
+        ["stop-indicator"] = {
+            container = {
+                color = theme.color.onPrimary
+            }
+        }
+    },
     xlarge = {
         icon = {
             padding = 8,
@@ -123,29 +144,6 @@ local function getTokens(theme)
             }
         }
     },
-    active = {
-        track = {
-            ["outer-corner"] = {
-                ["corner-size"] = theme.shape.cornerFull
-            },
-            color = theme.color.primary,
-            shape = theme.shape.cornerFull,
-            height = 16
-        },
-        ["stop-indicator"] = {
-            container = {
-                color = theme.color.onPrimary
-            }
-        },
-        handle = {
-            shape = theme.shape.cornerFull,
-            padding = 6,
-            ["trailing-space"] = 6,
-            ["leading-space"] = 6,
-            width = 4,
-            height = 44
-        }
-    },
     disabled = {
         ["stop-indicator"] = {
             container = {
@@ -195,8 +193,7 @@ local function getTokens(theme)
         ["color-selected"] = theme.color.onPrimary,
         color = theme.color.onSecondaryContainer,
         shape = theme.shape.cornerFull,
-        size = 4,
-        ["trailing-space"] = 4
+        size = 4
     },
     ["with-tick-marks"] = {
         inactive = {
@@ -263,9 +260,6 @@ local function getTokens(theme)
         },
         container = {
             color = theme.color.inverseSurface
-        },
-        active = {
-            ["bottom-space"] = 12
         }
     },
     pressed = {
@@ -302,7 +296,13 @@ local function getTokens(theme)
             color = theme.color.primary
         }
     },
-    ["slider-active-handle-color"] = theme.color.primary,
+    sys = {
+        measurement = {
+            space150 = 12,
+            space50 = 4,
+            space75 = 6
+        }
+    },
     ["with-overlap"] = {
         handle = {
             outline = {

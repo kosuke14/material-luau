@@ -2,10 +2,72 @@
 -- !!! THIS FILE WAS AUTOMATICALLY GENERATED !!!
 -- !!! DO NOT MODIFY IT BY HAND !!!
 -- Design system display name: Google Material 3
--- Token revision id: af25
+-- Token revision id: 7989
 
 local function getTokens(theme)
     return {
+    ["with-icon"] = {
+        pressed = {
+            icon = {
+                color = theme.color.onPrimary
+            }
+        },
+        focus = {
+            icon = {
+                color = theme.color.onPrimary
+            }
+        },
+        hover = {
+            icon = {
+                color = theme.color.onPrimary
+            }
+        },
+        disabled = {
+            icon = {
+                color = theme.color.onSurface
+            }
+        },
+        icon = {
+            color = theme.color.onPrimary,
+            size = 18
+        },
+        dragged = {
+            icon = {
+                color = theme.color.onPrimary
+            }
+        }
+    },
+    pressed = {
+        ["state-layer"] = {
+            color = theme.color.onPrimary
+        },
+        ["label-text"] = {
+            color = theme.color.onPrimary
+        },
+        outline = {
+            color = theme.color.outline
+        },
+        container = {
+            shape = theme.shape.cornerSmall
+        },
+        icon = {
+            color = theme.color.onPrimary
+        }
+    },
+    focus = {
+        ["state-layer"] = {
+            color = theme.color.onPrimary
+        },
+        ["label-text"] = {
+            color = theme.color.onPrimary
+        },
+        indicator = {
+            color = theme.color.secondary
+        },
+        outline = {
+            color = theme.color.primary
+        }
+    },
     sys = {
         state = {
             ["focus-indicator"] = {
@@ -13,43 +75,69 @@ local function getTokens(theme)
                 thickness = 3
             }
         },
+        measurement = {
+            space300 = 24,
+            space100 = 8,
+            space800 = 64,
+            space200 = 16,
+            space600 = 48,
+            space150 = 12,
+            space50 = 4
+        },
         color = {
             ["surface-tint"] = theme.color.primary
         }
     },
-    focus = {
-        indicator = {
-            color = theme.color.secondary
+    hover = {
+        ["state-layer"] = {
+            color = theme.color.onPrimary
         },
         ["label-text"] = {
-            color = theme.color.primary
-        },
-        ["state-layer"] = {
-            color = theme.color.primary
-        },
-        outline = {
-            color = theme.color.primary
-        }
-    },
-    ["trailing-space"] = 24,
-    pressed = {
-        container = {
-            shape = theme.shape.cornerSmall
-        },
-        ["state-layer"] = {
-            color = theme.color.primary
-        },
-        ["label-text"] = {
-            color = theme.color.primary
-        },
-        icon = {
             color = theme.color.onPrimary
         },
         outline = {
             color = theme.color.outline
         }
     },
-    ["icon-label-space"] = 8,
+    disabled = {
+        ["label-text"] = {
+            color = theme.color.onSurface
+        },
+        container = {
+            color = theme.color.onSurface
+        },
+        outline = {
+            color = theme.color.onSurface
+        },
+        icon = {
+            color = theme.color.onSurface
+        }
+    },
+    ["label-text"] = {
+        color = theme.color.onPrimary,
+        font = theme.typography.label.large.font,
+        size = theme.typography.label.large.size,
+        unselected = {
+            color = theme.color.onSurfaceVariant
+        },
+        selected = {
+            color = theme.color.onPrimary
+        },
+        value = theme.typography.label.large
+    },
+    container = {
+        height = 40,
+        shape = theme.shape.cornerFull,
+        color = theme.color.primary,
+        ["shadow-color"] = theme.color.shadow,
+        ["surface-tint-layer"] = {
+            color = theme.color.surfaceTint
+        }
+    },
+    outline = {
+        width = 1,
+        color = theme.color.outline
+    },
     selected = {
         container = {
             shape = {
@@ -383,19 +471,6 @@ local function getTokens(theme)
             }
         }
     },
-    container = {
-        color = theme.color.primary,
-        ["shadow-color"] = theme.color.shadow,
-        shape = {
-            square = theme.shape.cornerMedium,
-            round = theme.shape.cornerFull,
-            value = theme.shape.cornerFull
-        },
-        height = 40,
-        ["surface-tint-layer"] = {
-            color = theme.color.surfaceTint
-        }
-    },
     unselected = {
         container = {
             color = theme.color.surfaceContainer
@@ -437,35 +512,9 @@ local function getTokens(theme)
             }
         }
     },
-    ["label-text"] = {
-        color = theme.color.primary,
-        unselected = {
-            color = theme.color.onSurfaceVariant
-        },
-        selected = {
-            color = theme.color.onPrimary
-        },
-        value = theme.typography.label.large,
-        font = theme.typography.label.large.font,
-        size = theme.typography.label.large.size
-    },
     icon = {
         color = theme.color.onPrimary,
         size = 20
-    },
-    disabled = {
-        container = {
-            color = theme.color.onSurface
-        },
-        ["label-text"] = {
-            color = theme.color.onSurface
-        },
-        icon = {
-            color = theme.color.onSurface
-        },
-        outline = {
-            color = theme.color.onSurface
-        }
     },
     hovered = {
         ["state-layer"] = {
@@ -489,7 +538,6 @@ local function getTokens(theme)
             color = theme.color.onPrimary
         }
     },
-    ["leading-space"] = 24,
     tonal = {
         container = {
             color = theme.color.secondaryContainer,
@@ -871,9 +919,6 @@ local function getTokens(theme)
         icon = {
             size = 40
         },
-        ["leading-space"] = 64,
-        ["icon-label-space"] = 16,
-        ["trailing-space"] = 64,
         pressed = {
             container = {
                 shape = theme.shape.cornerLarge
@@ -905,9 +950,6 @@ local function getTokens(theme)
         icon = {
             size = 32
         },
-        ["leading-space"] = 48,
-        ["icon-label-space"] = 12,
-        ["trailing-space"] = 48,
         pressed = {
             container = {
                 shape = theme.shape.cornerLarge
@@ -939,9 +981,6 @@ local function getTokens(theme)
         icon = {
             size = 24
         },
-        ["leading-space"] = 24,
-        ["icon-label-space"] = 8,
-        ["trailing-space"] = 24,
         pressed = {
             container = {
                 shape = theme.shape.cornerMedium
@@ -973,9 +1012,6 @@ local function getTokens(theme)
         icon = {
             size = 20
         },
-        ["leading-space"] = 16,
-        ["icon-label-space"] = 8,
-        ["trailing-space"] = 16,
         pressed = {
             container = {
                 shape = theme.shape.cornerSmall
@@ -1008,7 +1044,6 @@ local function getTokens(theme)
         },
         ["label-text"] = theme.typography.label.large,
         ["leading-space"] = 12,
-        ["icon-label-space"] = 8,
         ["trailing-space"] = 12,
         pressed = {
             container = {
@@ -1024,37 +1059,6 @@ local function getTokens(theme)
             }
         }
     },
-    ["with-icon"] = {
-        dragged = {
-            icon = {
-                color = theme.color.onPrimary
-            }
-        },
-        pressed = {
-            icon = {
-                color = theme.color.primary
-            }
-        },
-        focus = {
-            icon = {
-                color = theme.color.primary
-            }
-        },
-        hover = {
-            icon = {
-                color = theme.color.primary
-            }
-        },
-        disabled = {
-            icon = {
-                color = theme.color.onSurface
-            }
-        },
-        icon = {
-            size = 18,
-            color = theme.color.primary
-        }
-    },
     dragged = {
         ["label-text"] = {
             color = theme.color.onPrimary
@@ -1062,21 +1066,6 @@ local function getTokens(theme)
         ["state-layer"] = {
             color = theme.color.onPrimary
         }
-    },
-    hover = {
-        ["label-text"] = {
-            color = theme.color.primary
-        },
-        ["state-layer"] = {
-            color = theme.color.primary
-        },
-        outline = {
-            color = theme.color.outline
-        }
-    },
-    outline = {
-        width = 1,
-        color = theme.color.outline
     }
 }
 end

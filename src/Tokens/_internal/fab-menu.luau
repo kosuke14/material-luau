@@ -2,15 +2,18 @@
 -- !!! THIS FILE WAS AUTOMATICALLY GENERATED !!!
 -- !!! DO NOT MODIFY IT BY HAND !!!
 -- Design system display name: Google Material 3
--- Token revision id: af25
+-- Token revision id: 7989
 
 local function getTokens(theme)
     return {
+    sys = {
+        measurement = {
+            space300 = 24,
+            space50 = 4,
+            space100 = 8
+        }
+    },
     ["menu-item"] = {
-        ["trailing-space"] = 24,
-        ["between-space"] = 4,
-        ["icon-label-space"] = 8,
-        ["leading-space"] = 24,
         container = {
             shape = theme.shape.cornerFull,
             height = 56
@@ -63,8 +66,7 @@ local function getTokens(theme)
         },
         icon = {
             size = 20
-        },
-        ["between-space"] = 8
+        }
     },
     ["primary-container"] = {
         ["list-item"] = {

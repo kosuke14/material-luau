@@ -2,7 +2,7 @@
 -- !!! THIS FILE WAS AUTOMATICALLY GENERATED !!!
 -- !!! DO NOT MODIFY IT BY HAND !!!
 -- Design system display name: Google Material 3
--- Token revision id: af25
+-- Token revision id: 7989
 
 local function getTokens(theme)
     return {
@@ -31,15 +31,10 @@ local function getTokens(theme)
         ["outer-corner"] = {
             ["corner-size"] = 50
         },
-        ["leading-button"] = {
-            ["leading-space"] = 12,
-            ["trailing-space"] = 10
-        },
         container = {
             height = 32,
             shape = theme.shape.cornerFull
-        },
-        ["between-space"] = 2
+        }
     },
     sys = {
         shape = {
@@ -49,6 +44,15 @@ local function getTokens(theme)
                 medium = 12,
                 ["large-increased"] = 20
             }
+        },
+        measurement = {
+            space150 = 12,
+            space125 = 10,
+            space25 = 2,
+            space800 = 64,
+            space600 = 48,
+            space300 = 24,
+            space200 = 16
         }
     },
     small = {
@@ -76,11 +80,6 @@ local function getTokens(theme)
         container = {
             height = 40,
             shape = theme.shape.cornerFull
-        },
-        ["between-space"] = 2,
-        ["leading-button"] = {
-            ["leading-space"] = 16,
-            ["trailing-space"] = 12
         }
     },
     medium = {
@@ -108,11 +107,6 @@ local function getTokens(theme)
         container = {
             height = 56,
             shape = theme.shape.cornerFull
-        },
-        ["between-space"] = 2,
-        ["leading-button"] = {
-            ["leading-space"] = 24,
-            ["trailing-space"] = 24
         }
     },
     large = {
@@ -140,11 +134,6 @@ local function getTokens(theme)
         container = {
             shape = theme.shape.cornerFull,
             height = 96
-        },
-        ["between-space"] = 2,
-        ["leading-button"] = {
-            ["leading-space"] = 48,
-            ["trailing-space"] = 48
         }
     },
     xlarge = {
@@ -172,11 +161,6 @@ local function getTokens(theme)
         container = {
             height = 136,
             shape = theme.shape.cornerFull
-        },
-        ["between-space"] = 2,
-        ["leading-button"] = {
-            ["leading-space"] = 64,
-            ["trailing-space"] = 64
         }
     },
     filled = {
