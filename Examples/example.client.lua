@@ -51,23 +51,6 @@ local textFieldValue = Scope:Value("");
 local filledTextFieldValue = Scope:Value("");
 local progressValue = Scope:Value(0.6);
 
--- Helper
-local function header(text, order)
-	Scope:New("TextLabel") {
-		Parent = ScrollingFrame,
-		Size = UDim2.new(1, 0, 0, 32),
-		BackgroundTransparency = 1,
-		Text = text,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		FontFace = Font.fromEnum(Enum.Font.GothamBold),
-		TextSize = 18,
-		TextColor3 = Scope:Computed(function(use)
-			return use(currentTheme).color.onSurface;
-		end),
-		LayoutOrder = order,
-	}
-end
-
 -- Layout
 local ScrollingFrame = Scope:New("ScrollingFrame") {
 	Parent = ScreenGui,
@@ -91,6 +74,23 @@ local ScrollingFrame = Scope:New("ScrollingFrame") {
 		},
 	}
 }
+
+-- Helper (after ScrollingFrame)
+local function header(text, order)
+	Scope:New("TextLabel") {
+		Parent = ScrollingFrame,
+		Size = UDim2.new(1, 0, 0, 32),
+		BackgroundTransparency = 1,
+		Text = text,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		FontFace = Font.fromEnum(Enum.Font.GothamBold),
+		TextSize = 18,
+		TextColor3 = Scope:Computed(function(use)
+			return use(currentTheme).color.onSurface;
+		end),
+		LayoutOrder = order,
+	}
+end
 
 -- Theme toggle button
 Scope:New("Frame") {
