@@ -15,7 +15,7 @@ local function LinearProgress(scope: Fusion.Scope, props: {
     end)
 
     local bar = scope:New("Frame") {
-        AnchorPoint = Vector2.new(0.5, 0),
+        AnchorPoint = Vector2.new(0.5, 0.5),
         Position = UDim2.new(-0.5, 0, 0.5, 0),
         Size = UDim2.new(0.5, 0, 0, 4),
         BackgroundColor3 = scope:Computed(function(use)
