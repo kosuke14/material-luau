@@ -63,7 +63,7 @@ local function Checkbox(scope: Fusion.Scope, props: {
                     if use(props.active) then
                         return use(error) and Tokens.errorContainerColor or Tokens.selectedContainerColor
                     else
-                        return Color3.new(1, 1, 1)
+                        return Tokens.surfaceColor
                     end
                 end),
                 BackgroundTransparency = scope:Computed(function(use)

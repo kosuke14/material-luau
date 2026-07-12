@@ -35,7 +35,7 @@ local function Card(scope: Fusion.Scope, props: {
     -- Container background based on variant
     local containerColor = scope:Computed(function(use)
         if variant == "outlined" then
-            return Color3.new(1, 1, 1) -- Surface
+            return Tokens.surfaceColor -- Surface
         else
             return Tokens.containerColor -- Surface container highest
         end
@@ -81,7 +81,7 @@ local function Card(scope: Fusion.Scope, props: {
             -- State layer (M3 spec: hover 8%, pressed 12%)
             scope:New("Frame") {
                 Size = UDim2.fromScale(1, 1),
-                BackgroundColor3 = Color3.new(0, 0, 0),
+                BackgroundColor3 = Tokens.stateLayerColor,
                 BackgroundTransparency = scope:Computed(function(use)
                     if use(isPressed) then
                         return 1 - 0.12 -- 12% opacity when pressed

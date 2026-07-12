@@ -1,13 +1,16 @@
 local RepS = game:GetService("ReplicatedStorage")
 local RunS = game:GetService("RunService")
+local MaterialRoblox = script.Parent.Parent
+local Theming = require(MaterialRoblox.Utils.Theming)
 
 local function CircularProgressIndeterminate(scope, props)
-    
+    local theme = Theming:now()
+
     -- Default Props
     local size = props.Size or 48
     local strokeWidth = props.StrokeWidth or 4
-    local color = props.Color or Color3.fromHex("#6750A4")
-    local trackColor = props.TrackColor or Color3.new(1, 1, 1) -- Roblox frames aren't transparent by default
+    local color = props.Color or theme.color.primary
+    local trackColor = props.TrackColor or theme.color.surfaceContainerHighest
     local trackTransparency = props.TrackTransparency or 1 -- Default to transparent track per M3
     
     -- Animation Constants

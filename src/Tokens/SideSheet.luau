@@ -11,7 +11,7 @@ local function getTokens()
 	local theme = Theming:now();
 
 	return {
-		scrimColor = Color3.new(0, 0, 0),
+		scrimColor = theme.color.scrim,
 		scrimTransparency = 1 - .32,
 		containerColor = theme.color.surfaceContainerLow,
         headlineText = theme.typography.title.large,

@@ -12,6 +12,7 @@ local function getTokens()
 		containerShape = tokens.container.shape,
 		outlineColor = tokens.outline.color,
 		outlineWidth = tokens.outline.width,
+		surfaceColor = theme.color.surface,
 		surfaceTintColor = theme.color.surfaceTint,
 		shadowColor = theme.color.shadow,
 		stateLayerColor = theme.color.onSurface,

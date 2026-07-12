@@ -23,6 +23,7 @@ local function getTokens()
 		iconColor = theme.color.primary,
 		selectedIconColor = tokens["with-icon"].selected.icon.color,
 		unselectedIconColor = tokens["with-icon"].unselected.icon.color,
+		surfaceColor = theme.color.surface,
 	}
 end
 

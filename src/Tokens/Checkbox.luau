@@ -22,6 +22,7 @@ local function getTokens()
 		errorContainerColor = theme.color.error,
 		errorIconColor = theme.color.onError,
 		focusIndicatorColor = theme.color.secondary,
+		surfaceColor = theme.color.surface,
 	}
 end
 

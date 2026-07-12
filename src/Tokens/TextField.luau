@@ -12,8 +12,9 @@ local function getTokens(variant: "filled" | "outlined"?)
 
 	return {
 		containerHeight = tf.container.height,
-		containerColor = variant == "filled" and tf.container.color or theme.color.surface,
+		containerColor = variant == "filled" and tf.container.color or theme.color.surfaceContainerHighest,
 		containerShape = tf.container.shape,
+		surfaceColor = theme.color.surface,
 		outlineColor = tf.outline.color,
 		outlineWidth = tf.outline.width,
 		activeIndicatorColor = tf["active-indicator"].color,

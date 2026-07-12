@@ -24,7 +24,7 @@ local function Chip(scope: Fusion.Scope, props: {
         Size = UDim2.new(0, 0, 0, Tokens.containerHeight),
         AutomaticSize = Enum.AutomaticSize.X,
         BackgroundColor3 = scope:Computed(function(use)
-            return use(selected) and Tokens.selectedContainerColor or Color3.new(1, 1, 1)
+            return use(selected) and Tokens.selectedContainerColor or Tokens.surfaceColor
         end),
         BackgroundTransparency = scope:Computed(function(use)
             return use(selected) and 0 or 1

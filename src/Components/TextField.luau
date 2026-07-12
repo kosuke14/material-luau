@@ -45,7 +45,7 @@ local function TextField(scope: Fusion.Scope, props: {
         [Children] = {
             scope:New("Frame") {
                 Size = UDim2.new(1, 0, 0, Tokens.containerHeight),
-                BackgroundColor3 = variant == "filled" and Tokens.containerColor or Color3.new(1, 1, 1),
+                BackgroundColor3 = variant == "filled" and Tokens.containerColor or Tokens.surfaceColor,
                 BackgroundTransparency = variant == "filled" and 0 or 1,
                 BorderSizePixel = 0,
 
