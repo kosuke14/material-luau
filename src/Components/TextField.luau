@@ -127,7 +127,7 @@ local function TextField(scope: Fusion.Scope, props: {
 
                         TextTransparency = scope:Tween(
                             scope:Computed(function(use)
-                                return (use(hasText) or use(isFocused)) and 1 or 0
+                                return (use(hasText) or use(isFocused)) and 0 or 1
                             end),
                             TweenInfo.new(0.15)
                         ),
