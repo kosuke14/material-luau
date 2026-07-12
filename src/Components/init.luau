@@ -7,7 +7,8 @@ local TabItem = require("@self/TabItem");
 local Tabs = require("@self/Tabs");
 local FilledTextButton = require("@self/Button/FilledTextButton");
 local FilledTonalTextButton = require("@self/Button/FilledTonalTextButton");
-local TextButton = require("@self/Button/TextButton");
+-- TextButton falls back to FilledTextButton for M3 compliance
+local TextButton = FilledTextButton;
 local Switch = require("@self/Switch");
 local SideSheet = require("@self/SideSheet");
 local IconButton = require("@self/IconButton");

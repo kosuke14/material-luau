@@ -113,6 +113,21 @@ local function Menu(
         TweenInfo.new(.2)
     );
 
+    local CLOSE_ANIMATION_DURATION = 0.25;
+    local isFullyClosed = scope:Value(Fusion.peek(open) == false);
+
+    scope:Observer(open):onChange(function()
+        if Fusion.peek(open) then
+            isFullyClosed:set(false)
+        else
+            task.delay(CLOSE_ANIMATION_DURATION, function()
+                if not Fusion.peek(open) then
+                    isFullyClosed:set(true)
+                end
+            end)
+        end
+    end);
+
     table.insert(scope, props.attachTo.MouseButton1Click:Connect(function()
         open:set(true);
 
@@ -159,7 +174,9 @@ local function Menu(
                 AutomaticSize = Enum.AutomaticSize.X,
                 AnchorPoint = menuAnchorPoint,
                 ZIndex = 2,
-                Visible = open,
+                Visible = scope:Computed(function(use)
+                    return use(open) or not use(isFullyClosed)
+                end),
 
                 GroupTransparency = menuGroupTransparency,
 
