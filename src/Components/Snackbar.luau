@@ -60,6 +60,7 @@ local function Snackbar(
 		BackgroundColor3 = Tokens.containerColor,
 		BorderSizePixel = 0,
 		GroupTransparency = containerTransparency,
+		Visible = props.open,
 
 		[Children] = {
 			scope:New("UICorner") {

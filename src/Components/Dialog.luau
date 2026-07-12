@@ -70,6 +70,7 @@ local function DialogElement(
 			end),
 			TweenInfo.new(.1)
 		),
+		Visible = props.open,
 		
 		[Children] = {
 			showComputed(scope, props.open, function()

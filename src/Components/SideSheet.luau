@@ -51,6 +51,7 @@ local function SideSheet(
 			end),
 			TweenInfo.new(.1)
 		),
+		Visible = props.open,
 		
 		[Children] = {
             showComputed(scope, props.inset or false, function()
