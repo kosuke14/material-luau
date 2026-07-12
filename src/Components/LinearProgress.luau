@@ -14,8 +14,9 @@ local function LinearProgress(scope: Fusion.Scope, props: {
         return LinearProgressTokens()
     end)
 
+    -- Bar for active indicator
     local bar = scope:New("Frame") {
-        AnchorPoint = Vector2.new(0.5, 0.5),
+        AnchorPoint = Vector2.new(0.5, 0),
         Position = UDim2.new(-0.5, 0, 0.5, 0),
         Size = UDim2.new(0.5, 0, 0, 4),
         BackgroundColor3 = scope:Computed(function(use)
@@ -31,13 +32,42 @@ local function LinearProgress(scope: Fusion.Scope, props: {
         }
     }
 
+    -- Dot at the end of determinate bar (M3 spec)
+    local dot = scope:New("Frame") {
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0, 0, 0.5, 0),
+        Size = UDim2.fromOffset(4, 4),
+        BackgroundColor3 = scope:Computed(function(use)
+            local t = use(tokens)
+            return t.activeIndicatorColor
+        end),
+        BorderSizePixel = 0,
+        Visible = scope:Computed(function(use)
+            return not (props.indeterminate and use(props.indeterminate))
+        end),
+
+        [Children] = {
+            scope:New("UICorner") {
+                CornerRadius = UDim.new(1, 0),
+            },
+        }
+    }
+
+    -- Determinate mode with dot
     local function updateDeterminate()
         local t = Fusion.peek(tokens)
         local val = props.value and Fusion.peek(props.value) or 0
         local width = math.clamp(val, 0, 1)
+
+        -- Animate bar
         TweenService:Create(bar, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
             Size = UDim2.new(width, 0, 0, t.trackHeight),
             Position = UDim2.new(width / 2, 0, 0.5, 0),
+        }):Play()
+
+        -- Animate dot position
+        TweenService:Create(dot, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
+            Position = UDim2.new(width, 0, 0.5, 0),
         }):Play()
     end
 
@@ -130,6 +160,7 @@ local function LinearProgress(scope: Fusion.Scope, props: {
             },
 
             bar,
+            dot,
         }
     }
 end
