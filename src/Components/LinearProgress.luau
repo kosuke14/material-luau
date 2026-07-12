@@ -1,4 +1,5 @@
 --!nonstrict
+local RunS = game:GetService("RunService");
 local MaterialRoblox = script.Parent.Parent;
 local Fusion = require(MaterialRoblox.Parent.Fusion);
 local LinearProgressTokens = require(MaterialRoblox.Tokens.LinearProgress);
@@ -11,72 +12,71 @@ local function LinearProgress(scope: Fusion.Scope, props: {
 })
 	local Tokens = LinearProgressTokens();
 
-	-- Goal values
-	local goalPosition = scope:Value(UDim2.new(-0.5, 0, 0.5, 0))
-	local goalSize = scope:Value(UDim2.new(0.5, 0, 0, Tokens.trackHeight))
+	-- For determinate: use Fusion Tween
+	local goalWidth = scope:Value(0)
+	local tweenInfoDeterminate = TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+	local animatedWidth = scope:Tween(goalWidth, tweenInfoDeterminate)
 
-	-- TweenInfo as scope values (reactive)
-	local currentTweenInfo = scope:Value(TweenInfo.new(2.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out))
+	-- For indeterminate: use timer-based animation (no Fusion Tween for instant reset)
+	local elapsed = scope:Value(0)
+	local SHORT_DURATION = 0.6
+	local LONG_DURATION = 1.5
+	local TOTAL_DURATION = SHORT_DURATION + LONG_DURATION
 
-	-- Animated values
-	local animatedPosition = scope:Tween(goalPosition, currentTweenInfo)
-	local animatedSize = scope:Tween(goalSize, currentTweenInfo)
+	table.insert(scope, RunS.RenderStepped:Connect(function(dt)
+		elapsed:set((scope.peek(elapsed) + dt) % TOTAL_DURATION)
+	end))
 
-	-- Reset instantly (no tween)
-	local function resetInstantly()
-		goalPosition:set(UDim2.new(-0.5, 0, 0.5, 0))
-		goalSize:set(UDim2.new(0.5, 0, 0, Tokens.trackHeight))
-	end
+	-- Indeterminate position and size based on timer
+	local indeterminateWidth = scope:Computed(function(use)
+		local t = use(elapsed)
+		if t < SHORT_DURATION then
+			-- Phase 1: grow from 0.5 to 0.75
+			local progress = t / SHORT_DURATION
+			local eased = 1 - math.pow(1 - progress, 3) -- Quintic Out approximation
+			return 0.5 + (eased * 0.25)
+		else
+			-- Phase 2: shrink from 0.75 to 0.5
+			local progress = (t - SHORT_DURATION) / LONG_DURATION
+			local eased = progress * progress * (3 - 2 * progress) -- Smoothstep
+			return 0.75 - (eased * 0.25)
+		end
+	end)
 
-	-- Indeterminate loop
-	local function runIndeterminate()
-		local running = true
+	local indeterminatePosition = scope:Computed(function(use)
+		local t = use(elapsed)
+		if t < SHORT_DURATION then
+			-- Phase 1: move from -0.5 to 0.3
+			local progress = t / SHORT_DURATION
+			local eased = 1 - math.pow(1 - progress, 3) -- Quintic Out
+			return -0.5 + (eased * 0.8)
+		else
+			-- Phase 2: move from 0.3 to 1.5
+			local progress = (t - SHORT_DURATION) / LONG_DURATION
+			local eased = 1 - math.pow(1 - progress, 3) -- Quintic Out
+			return 0.3 + (eased * 1.2)
+		end
+	end)
 
-		table.insert(scope, function()
-			running = false
-		end)
-
-		task.spawn(function()
-			while running do
-				-- Reset instantly
-				resetInstantly()
-
-				-- Phase 1: Move right + grow (2.5s Quint Out for position, 0.75s Quint InOut for size)
-				currentTweenInfo:set(TweenInfo.new(2.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out))
-				goalPosition:set(UDim2.new(0.3, 0, 0.5, 0))
-
-				currentTweenInfo:set(TweenInfo.new(0.75, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut))
-				goalSize:set(UDim2.new(0.75, 0, 0, Tokens.trackHeight))
-				task.wait(0.75)
-
-				if not running then break end
-
-				-- Phase 2: Shrink + move off-screen (0.5s Quint InOut for size, 1.75s Quint Out for position)
-				currentTweenInfo:set(TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut))
-				goalSize:set(UDim2.new(0.5, 0, 0, Tokens.trackHeight))
-
-				currentTweenInfo:set(TweenInfo.new(1.75, Enum.EasingStyle.Quint, Enum.EasingDirection.Out))
-				goalPosition:set(UDim2.new(1.5, 0, 0.5, 0))
-				task.wait(0.5)
-
-				if not running then break end
-			end
-		end)
-	end
-
-	-- Determinate mode
-	local function updateDeterminate()
-		currentTweenInfo:set(TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out))
-		local val = props.value and Fusion.peek(props.value) or 0
-		goalPosition:set(UDim2.new(0, 0, 0.5, 0))
-		goalSize:set(UDim2.new(math.clamp(val, 0, 1), 0, 0, Tokens.trackHeight))
-	end
-
-	-- Create bar
+	-- Create bar with AnchorPoint (0.5, 0) for proper centering
 	local bar = scope:New("Frame") {
 		AnchorPoint = Vector2.new(0.5, 0),
-		Position = animatedPosition,
-		Size = animatedSize,
+		Position = scope:Computed(function(use)
+			if props.indeterminate and use(props.indeterminate) then
+				return UDim2.new(use(indeterminatePosition), 0, 0.5, 0)
+			else
+				-- Determinate: centered position based on width
+				local width = use(animatedWidth)
+				return UDim2.new(width / 2, 0, 0.5, 0)
+			end
+		end),
+		Size = scope:Computed(function(use)
+			if props.indeterminate and use(props.indeterminate) then
+				return UDim2.new(use(indeterminateWidth), 0, 0, Tokens.trackHeight)
+			else
+				return UDim2.new(use(animatedWidth), 0, 0, Tokens.trackHeight)
+			end
+		end),
 		BackgroundColor3 = Tokens.activeIndicatorColor,
 		BorderSizePixel = 0,
 
@@ -87,31 +87,17 @@ local function LinearProgress(scope: Fusion.Scope, props: {
 		}
 	}
 
-	-- Handle mode switching
-	if props.indeterminate then
-		scope:Observer(props.indeterminate):onChange(function()
-			if Fusion.peek(props.indeterminate) then
-				runIndeterminate()
-			else
-				updateDeterminate()
-			end
-		end)
-
-		if Fusion.peek(props.indeterminate) then
-			runIndeterminate()
-		else
-			updateDeterminate()
-		end
-	end
-
 	-- Handle determinate value changes
 	if props.value then
 		scope:Observer(props.value):onChange(function()
 			if not (props.indeterminate and Fusion.peek(props.indeterminate)) then
-				updateDeterminate()
+				local val = Fusion.peek(props.value)
+				goalWidth:set(math.clamp(val, 0, 1))
 			end
 		end)
-		updateDeterminate()
+		-- Initialize
+		local val = Fusion.peek(props.value)
+		goalWidth:set(math.clamp(val, 0, 1))
 	end
 
 	return scope:New("Frame") {
