@@ -50,6 +50,21 @@ local ScrollingFrame = Scope:New("ScrollingFrame") {
 	}
 }
 
+-- Helper: section header
+local function addHeader(text, order)
+	Scope:New("TextLabel") {
+		Parent = ScrollingFrame,
+		Size = UDim2.new(1, 0, 0, 28),
+		BackgroundTransparency = 1,
+		Text = text,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		FontFace = Font.fromEnum(Enum.Font.GothamBold),
+		TextSize = 16,
+		TextColor3 = Color3.fromHex("#1C1B1F"),
+		LayoutOrder = order,
+	}
+end
+
 ------------------------------------------------------------------------
 -- 1. Checkbox
 ------------------------------------------------------------------------
