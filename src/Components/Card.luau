@@ -33,11 +33,8 @@ local function Card(scope: Fusion.Scope, props: {
                 isHovering:set(false)
             elseif input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 isPressed:set(false)
+                if props.onClick then props.onClick() end
             end
-        end,
-
-        [OnEvent "MouseButton1Click"] = function()
-            if props.onClick then props.onClick() end
         end,
 
         [Children] = {
