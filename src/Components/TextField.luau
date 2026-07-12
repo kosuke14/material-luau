@@ -114,16 +114,42 @@ local function TextField(scope: Fusion.Scope, props: {
                         end),
                     } or nil,
 
+                    props.placeholder and scope:New("TextLabel") {
+                        Size = UDim2.new(1, 0, 1, 0),
+                        Position = UDim2.fromScale(0, 0),
+                        BackgroundTransparency = 1,
+                        Text = props.placeholder,
+                        FontFace = Tokens.inputFont,
+                        TextSize = Tokens.inputSize,
+                        TextColor3 = Tokens.placeholderColor,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        TextTruncate = Enum.TextTruncate.AtEnd,
+
+                        TextTransparency = scope:Tween(
+                            scope:Computed(function(use)
+                                return (use(hasText) or use(isFocused)) and 1 or 0
+                            end),
+                            TweenInfo.new(0.15)
+                        ),
+
+                        [Children] = {
+                            scope:New("UIPadding") {
+                                PaddingLeft = UDim.new(0, hasLeadingIcon and 48 or 16),
+                                PaddingRight = UDim.new(0, hasTrailingIcon and 48 or 16),
+                                PaddingTop = UDim.new(0, props.label and 8 or 0),
+                            }
+                        }
+                    } or nil,
+
                     scope:New("TextBox") {
                         Size = UDim2.new(1, 0, 1, 0),
                         BackgroundTransparency = 1,
                         ClearTextOnFocus = false,
                         Text = "",
-                        PlaceholderText = props.placeholder or "",
+                        PlaceholderText = "",
                         FontFace = Tokens.inputFont,
                         TextSize = Tokens.inputSize,
                         TextColor3 = Tokens.inputColor,
-                        PlaceholderColor3 = Tokens.placeholderColor,
                         TextXAlignment = Enum.TextXAlignment.Left,
 
                         [OnEvent "Focused"] = function() isFocused:set(true) end,
