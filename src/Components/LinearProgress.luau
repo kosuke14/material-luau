@@ -56,7 +56,6 @@ local function LinearProgress(scope: Fusion.Scope, props: {
 
                 bar.AnchorPoint = Vector2.new(1, 0.5)
                 bar.Position = UDim2.new(0, 0, 0.5, 0)
-                bar.Size = UDim2.new(0, 0, 0, Tokens.trackThickness)
                 -- Long easing: translate to right while shrinking
                 local tweenLong = TweenService:Create(bar, TWEEN_INFO_LONG, {
                     AnchorPoint = Vector2.new(0, 0.5),
