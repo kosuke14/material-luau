@@ -150,7 +150,8 @@ local function Ripple(
 	}?
 )
 	local Tokens = RippleTokens();
-	
+	props = props or {};
+
 	local isHovering = scope:Value(false);
 	local currentAnimation: Fusion.Value<nil | Tween> = scope:Value(nil);
 	local renderRoot: Fusion.Value<nil | CanvasGroup> = scope:Value(nil);
