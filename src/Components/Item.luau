@@ -27,9 +27,9 @@ local function Item(
 )
     local Tokens = ItemTokens();
 
-    print(Tokens)
+    --print(Tokens)
 
-    print(Tokens.labelFont.fontSize)
+    --print(Tokens.labelFont.fontSize)
 
     return scope:New("ImageButton") {
         Size = UDim2.new(props.fullWidth and 1 or 0, 0, 0, Tokens.height),
