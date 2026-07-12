@@ -16,11 +16,12 @@ if [ ! -d "Packages/_Index" ]; then
     wally install
 fi
 
-echo "Building MaterialRoblox.rbxm..."
+echo "Building MaterialRoblox.rbxm (with dependencies)..."
 $ROJO build build.project.json -o MaterialRoblox.rbxm
 echo "Built: MaterialRoblox.rbxm ($(du -h MaterialRoblox.rbxm | cut -f1))"
 echo ""
 echo "Usage:"
-echo "  1. Insert MaterialRoblox.rbxm into ReplicatedStorage in Studio"
-echo "  2. Run 'wally install' to get dependencies (if not already done)"
-echo "  3. Require with: require(ReplicatedStorage.MaterialRoblox)"
+echo "  Insert MaterialRoblox.rbxm into ReplicatedStorage in Roblox Studio"
+echo "  The folder structure matches dev.project.json:"
+echo "    ReplicatedStorage/MaterialRoblox/Packages/  (dependencies)"
+echo "    ReplicatedStorage/MaterialRoblox/MaterialRoblox/  (module source)"
