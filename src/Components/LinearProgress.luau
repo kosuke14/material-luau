@@ -11,9 +11,18 @@ local SHORT_DURATION = 0.6;
 local LONG_DURATION = 1.5;
 local TOTAL_DURATION = SHORT_DURATION + LONG_DURATION;
 
--- Exponential Out easing
+-- Exponential Out easing for short
 local function easeOut(t: number): number
     return 1 - math.pow(2, -10 * t);
+end
+
+-- Exponential InOut easing for long
+local function easeInOut(t: number): number
+    if t < 0.5 then
+        return 0.5 * math.pow(2, 20 * t - 10)
+    else
+        return 1 - 0.5 * math.pow(2, -20 * t + 10)
+    end
 end
 
 local function LinearProgress(scope: Fusion.Scope, props: {
@@ -35,9 +44,10 @@ local function LinearProgress(scope: Fusion.Scope, props: {
     -- Both easings: position goes from 0 to 100%, width shrinks as it moves
     local function getIndeterminateWidth(use)
         local t = use(elapsed)
-        local progress = easeOut(t < SHORT_DURATION
-            and (t / SHORT_DURATION)
-            or ((t - SHORT_DURATION) / LONG_DURATION))
+        local isShort = t < SHORT_DURATION
+        local progress = isShort
+            and easeOut(t / SHORT_DURATION)
+            or easeInOut((t - SHORT_DURATION) / LONG_DURATION)
 
         -- Width: starts at 60%, shrinks to 25% as it moves
         return 0.6 - (progress * 0.35)
@@ -45,9 +55,10 @@ local function LinearProgress(scope: Fusion.Scope, props: {
 
     local function getIndeterminatePosition(use)
         local t = use(elapsed)
-        local progress = easeOut(t < SHORT_DURATION
-            and (t / SHORT_DURATION)
-            or ((t - SHORT_DURATION) / LONG_DURATION))
+        local isShort = t < SHORT_DURATION
+        local progress = isShort
+            and easeOut(t / SHORT_DURATION)
+            or easeInOut((t - SHORT_DURATION) / LONG_DURATION)
 
         -- Both easings: position completes to 100%
         return progress
