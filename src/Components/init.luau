@@ -6,7 +6,8 @@ local Ripple = require("@self/Ripple");
 local TabItem = require("@self/TabItem");
 local Tabs = require("@self/Tabs");
 local FilledTextButton = require("@self/Button/FilledTextButton");
---local Banner = require("@self/Banner");
+local FilledTonalTextButton = require("@self/Button/FilledTonalTextButton");
+local TextButton = require("@self/Button/TextButton");
 local Switch = require("@self/Switch");
 local SideSheet = require("@self/SideSheet");
 local IconButton = require("@self/IconButton");
@@ -15,6 +16,17 @@ local Item = require("@self/Item");
 local Shadow = require("@self/Shadow");
 local AlertDialog = require("@self/AlertDialog");
 local CircularProgressIndicator = require("@self/CircularProgress");
+local Checkbox = require("@self/Checkbox");
+local RadioButton = require("@self/RadioButton");
+local TextField = require("@self/TextField");
+local Card = require("@self/Card");
+local Snackbar = require("@self/Snackbar");
+local FloatingActionButton = require("@self/FloatingActionButton");
+local Divider = require("@self/Divider");
+local Chip = require("@self/Chip");
+local LinearProgress = require("@self/LinearProgress");
+local Badge = require("@self/Badge");
+local Tooltip = require("@self/Tooltip");
 
 return {
     Dialog = Dialog,
@@ -25,7 +37,8 @@ return {
     TabItem = TabItem,
     Tabs = Tabs,
     FilledTextButton = FilledTextButton,
---   Banner = Banner,
+    FilledTonalTextButton = FilledTonalTextButton,
+    TextButton = TextButton,
     Switch = Switch,
     SideSheet = SideSheet,
     IconButton = IconButton,
@@ -33,5 +46,16 @@ return {
     Item = Item,
     Shadow = Shadow,
     AlertDialog = AlertDialog,
-    CircularProgressIndicator = CircularProgressIndicator
+    CircularProgressIndicator = CircularProgressIndicator,
+    Checkbox = Checkbox,
+    RadioButton = RadioButton,
+    TextField = TextField,
+    Card = Card,
+    Snackbar = Snackbar,
+    FloatingActionButton = FloatingActionButton,
+    Divider = Divider,
+    Chip = Chip,
+    LinearProgress = LinearProgress,
+    Badge = Badge,
+    Tooltip = Tooltip,
 }
