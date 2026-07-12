@@ -161,8 +161,8 @@ local function TextField(scope: Fusion.Scope, props: {
                         [OnEvent "FocusLost"] = function(textBox)
                             isFocused:set(false)
                         end,
-						[OnChange "Text"] = function(textBox)
-							value:set(textBox.Text)
+						[OnChange "Text"] = function(text)
+							value:set(text)
 						end,
 
                         [Children] = {
