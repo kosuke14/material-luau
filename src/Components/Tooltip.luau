@@ -7,7 +7,6 @@ local MaterialRoblox = script.Parent.Parent;
 
 local Fusion = require(MaterialRoblox.Parent.Fusion);
 local TooltipTokens = require(MaterialRoblox.Tokens.Tooltip);
-local Shadow = require(MaterialRoblox.Components.Shadow);
 
 local Children = Fusion.Children;
 local OnEvent = Fusion.OnEvent;

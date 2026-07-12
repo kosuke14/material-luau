@@ -160,7 +160,7 @@ local function Ripple(
 			scope:New("CanvasGroup") {
 				ClipsDescendants = true,
 				Size = UDim2.fromScale(1, 1),
-				BackgroundColor3 = props.color or Tokens.hoverColor,
+				BackgroundColor3 = (props and props.color) or Tokens.hoverColor or Color3.new(1, 1, 1),
 				BackgroundTransparency = scope:Computed(function(
 					use: Fusion.Use
 				)

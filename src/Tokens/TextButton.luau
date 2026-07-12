@@ -20,20 +20,23 @@ local function getTokens(
     size = size or "small";
     type = type or "round";
 
+    local sizeTokens = tokens[size] or tokens.small;
+    local variantTokens = tokens[variant] or tokens.text;
+
     return {
-        containerHeight = tokens[size].container.height,
-        containerColor = tokens[variant].container and tokens[variant].container.color or nil,
+        containerHeight = sizeTokens.container.height,
+        containerColor = variantTokens.container and variantTokens.container.color or nil,
         containerTransparency = (variant == "text") and 1 or 0,
-        containerShape = tokens[size].container.shape[type],
-        containerShapePress = tokens[size].pressed.container.shape,
-        containerShapeHover = tokens[size].selected.container.shape[type],
-        rippleColor = tokens[variant].pressed["state-layer"].color,
-        labelColor = tokens[variant]["label-text"].color,
-        label = tokens[size]["label-text"],
-        leadingSpace = tokens[size]["leading-space"],
-        trailingSpace = tokens[size]["trailing-space"],
-        iconLabelSpace = tokens[size]['icon-label-space'],
-        iconSize = tokens[size].icon.size
+        containerShape = sizeTokens.container.shape[type],
+        containerShapePress = sizeTokens.pressed.container.shape,
+        containerShapeHover = sizeTokens.selected.container.shape[type],
+        rippleColor = variantTokens.pressed["state-layer"].color,
+        labelColor = variantTokens["label-text"].color,
+        label = sizeTokens["label-text"],
+        leadingSpace = variantTokens["leading-space"] or 12,
+        trailingSpace = variantTokens["trailing-space"] or 12,
+        iconLabelSpace = sizeTokens["icon-label-space"] or 8,
+        iconSize = sizeTokens.icon.size
     }
 end
 
