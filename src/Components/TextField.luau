@@ -6,6 +6,7 @@ local Icon = require(MaterialRoblox.Components.Icon);
 
 local Children = Fusion.Children;
 local OnEvent = Fusion.OnEvent;
+local Out = Fusion.Out;
 
 local function TextField(scope: Fusion.Scope, props: {
     placeholder: string?,
@@ -33,6 +34,18 @@ local function TextField(scope: Fusion.Scope, props: {
 
     local isLabelFloated = scope:Computed(function(use)
         return use(hasText) or use(isFocused)
+    end)
+
+    local textBoxRef = scope:Value(nil)
+
+    -- Connect to TextBox text changes
+    scope:Observer(textBoxRef):onChange(function()
+        local textBox = Fusion.peek(textBoxRef)
+        if textBox then
+            table.insert(scope, textBox:GetPropertyChangedSignal("Text"):Connect(function()
+                props.value:set(textBox.Text)
+            end))
+        end
     end)
 
     return scope:New("Frame") {
@@ -154,13 +167,12 @@ local function TextField(scope: Fusion.Scope, props: {
                         TextXAlignment = Enum.TextXAlignment.Left,
 
                         [OnEvent "Focused"] = function() isFocused:set(true) end,
-                        [OnEvent "FocusLost"] = function(textBox) 
+                        [OnEvent "FocusLost"] = function(textBox)
                             isFocused:set(false)
                             props.value:set(textBox.Text)
                         end,
-                        [OnEvent "TextChanged"] = function(textBox)
-                            props.value:set(textBox.Text)
-                        end,
+
+                        [Out "Text"] = textBoxRef,
 
                         [Children] = {
                             scope:New("UIPadding") {
