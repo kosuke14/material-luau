@@ -124,13 +124,9 @@ local function TextField(scope: Fusion.Scope, props: {
                         TextColor3 = Tokens.placeholderColor,
                         TextXAlignment = Enum.TextXAlignment.Left,
                         TextTruncate = Enum.TextTruncate.AtEnd,
-
-                        TextTransparency = scope:Tween(
-                            scope:Computed(function(use)
-                                return (use(hasText) or use(isFocused)) and 0 or 1
-                            end),
-                            TweenInfo.new(0.15)
-                        ),
+                        TextTransparency = scope:Computed(function(use)
+                            return (use(hasText) or use(isFocused)) and 1 or 0
+                        end),
 
                         [Children] = {
                             scope:New("UIPadding") {
