@@ -6,23 +6,14 @@ local LinearProgressTokens = require(MaterialRoblox.Tokens.LinearProgress);
 
 local Children = Fusion.Children;
 
--- M3 indeterminate animation timing
-local SHORT_DURATION = 0.6; -- 600ms grow/shrink
-local LONG_DURATION = 1.5;  -- 1500ms translate
+-- M3 indeterminate: alternate between short (600ms) and long (1500ms) easings
+local SHORT_DURATION = 0.6;
+local LONG_DURATION = 1.5;
 local TOTAL_DURATION = SHORT_DURATION + LONG_DURATION;
 
--- Attempt to approximate cubic-bezier(0.05, 0.7, 0.1, 1.0)
--- Using Exponential Out as closest match
-local function easingExpoOut(t: number): number
+-- Exponential Out easing to approximate cubic-bezier(0.05, 0.7, 0.1, 1.0)
+local function easeOut(t: number): number
     return 1 - math.pow(2, -10 * t);
-end
-
-local function easingExpoIn(t: number): number
-    return math.pow(2, 10 * (t - 1));
-end
-
-local function linearInterp(t: number, from: number, to: number): number
-    return from + (to - from) * t;
 end
 
 local function LinearProgress(scope: Fusion.Scope, props: {
@@ -30,43 +21,43 @@ local function LinearProgress(scope: Fusion.Scope, props: {
     value: Fusion.Value<number>?,
 })
     local Tokens = LinearProgressTokens();
-
     local elapsed = scope:Value(0);
 
     table.insert(scope, RunS.RenderStepped:Connect(function(dt)
         elapsed:set((scope.peek(elapsed) + dt) % TOTAL_DURATION)
     end))
 
-    -- Determinate: simple width based on value
-    local function getDeterminateProps(use)
+    -- Determinate: fixed width at left edge
+    local function getDeterminateWidth(use)
         local val = props.value and use(props.value) or 0
-        local width = math.clamp(val, 0, 1)
-        return {
-            width = width,
-            position = 0,
-        }
+        return math.clamp(val, 0, 1)
     end
 
-    -- Indeterminate: grow + translate + shrink cycle
-    local function getIndeterminateProps(use)
-        local t = use(elapsed);
+    -- Indeterminate: two alternating animations
+    local function getIndeterminateWidth(use)
+        local t = use(elapsed)
 
         if t < SHORT_DURATION then
-            -- Phase 1: Grow from left edge
-            -- Width: 0% -> 50%, Position: stays at 0%
-            local phase = easingExpoOut(t / SHORT_DURATION);
-            return {
-                width = linearInterp(phase, 0, 0.5),
-                position = 0,
-            }
+            -- Short easing: grow from 0% to 60%
+            local progress = easeOut(t / SHORT_DURATION)
+            return progress * 0.6
         else
-            -- Phase 2: Translate right while shrinking
-            -- Position: 0% -> 100%, Width: 50% -> 25%
-            local phase = easingExpoOut((t - SHORT_DURATION) / LONG_DURATION);
-            return {
-                width = linearInterp(phase, 0.5, 0.25),
-                position = phase,
-            }
+            -- Long easing: shrink from 60% to 30% while moving
+            local progress = easeOut((t - SHORT_DURATION) / LONG_DURATION)
+            return 0.6 - (progress * 0.3)
+        end
+    end
+
+    local function getIndeterminatePosition(use)
+        local t = use(elapsed)
+
+        if t < SHORT_DURATION then
+            -- Short easing: stay at left edge
+            return 0
+        else
+            -- Long easing: move from 0% to 70%
+            local progress = easeOut((t - SHORT_DURATION) / LONG_DURATION)
+            return progress * 0.7
         end
     end
 
@@ -92,13 +83,13 @@ local function LinearProgress(scope: Fusion.Scope, props: {
             scope:New("Frame") {
                 Size = scope:Computed(function(use)
                     local isIndeterminate = props.indeterminate and use(props.indeterminate) or false
-                    local props_data = isIndeterminate and getIndeterminateProps(use) or getDeterminateProps(use)
-                    return UDim2.new(props_data.width, 0, 0, Tokens.trackThickness)
+                    local width = isIndeterminate and getIndeterminateWidth(use) or getDeterminateWidth(use)
+                    return UDim2.new(width, 0, 0, Tokens.trackThickness)
                 end),
                 Position = scope:Computed(function(use)
                     local isIndeterminate = props.indeterminate and use(props.indeterminate) or false
-                    local props_data = isIndeterminate and getIndeterminateProps(use) or getDeterminateProps(use)
-                    return UDim2.new(props_data.position, 0, 0.5, 0)
+                    local pos = isIndeterminate and getIndeterminatePosition(use) or 0
+                    return UDim2.new(pos, 0, 0.5, 0)
                 end),
                 AnchorPoint = Vector2.new(0, 0.5),
                 BackgroundColor3 = Tokens.activeIndicatorColor,
