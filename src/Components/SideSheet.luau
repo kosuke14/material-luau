@@ -22,6 +22,8 @@ local function SideSheet(
 	}
 )
 	local Tokens = SideSheetTokens();
+	local CLOSE_ANIMATION_DURATION = 0.15
+	local isFullyClosed = scope:Value(Fusion.peek(props.open) == false)
 
     local function safeClose()
         Fusion.Safe({
@@ -33,7 +35,19 @@ local function SideSheet(
             end
         })
     end
-	
+
+	scope:Observer(props.open):onChange(function()
+		if Fusion.peek(props.open) then
+			isFullyClosed:set(false)
+		else
+			task.delay(CLOSE_ANIMATION_DURATION, function()
+				if not Fusion.peek(props.open) then
+					isFullyClosed:set(true)
+				end
+			end)
+		end
+	end)
+
 	return scope:New("Frame") {
 		Name = "Scrim",
 		Size = UDim2.fromScale(1, 1),
@@ -51,8 +65,10 @@ local function SideSheet(
 			end),
 			TweenInfo.new(.1)
 		),
-		Visible = props.open,
-		
+		Visible = scope:Computed(function(use)
+			return use(props.open) or not use(isFullyClosed)
+		end),
+
 		[Children] = {
             showComputed(scope, props.inset or false, function()
                 return scope:New("UIPadding") {
@@ -62,7 +78,10 @@ local function SideSheet(
                 }
             end),
 
-			showComputed(scope, props.open, function()
+			-- Modal blocker during close animation
+			showComputed(scope, scope:Computed(function(use)
+				return not use(props.open) and not use(isFullyClosed)
+			end), function()
 				return scope:New("ImageButton") {
 					Modal = true,
 					Size = UDim2.fromScale(1, 1),

@@ -13,6 +13,7 @@ local Children = Fusion.Children;
 local OnEvent = Fusion.OnEvent;
 
 local CLOSE_ICON = "rbxassetid://6031264853";
+local CLOSE_ANIMATION_DURATION = 0.35
 
 local function Snackbar(
 	scope: Fusion.Scope,
@@ -25,9 +26,21 @@ local function Snackbar(
 	}
 )
 	local Tokens = SnackbarTokens();
+	local isFullyClosed = scope:Value(Fusion.peek(props.open) == false)
+
+	scope:Observer(props.open):onChange(function()
+		if Fusion.peek(props.open) then
+			isFullyClosed:set(false)
+		else
+			task.delay(CLOSE_ANIMATION_DURATION, function()
+				if not Fusion.peek(props.open) then
+					isFullyClosed:set(true)
+				end
+			end)
+		end
+	end)
 
 	local containerHeight = scope:Computed(function(use)
-		-- If message is long, use two-line height
 		if #use(props.message) > 40 then
 			return Tokens.twoLineHeight
 		else
@@ -35,7 +48,6 @@ local function Snackbar(
 		end
 	end)
 
-	-- Position: bottom of screen with margin
 	local containerPosition = scope:Spring(
 		scope:Computed(function(use)
 			return if use(props.open)
@@ -60,7 +72,9 @@ local function Snackbar(
 		BackgroundColor3 = Tokens.containerColor,
 		BorderSizePixel = 0,
 		GroupTransparency = containerTransparency,
-		Visible = props.open,
+		Visible = scope:Computed(function(use)
+			return use(props.open) or not use(isFullyClosed)
+		end),
 
 		[Children] = {
 			scope:New("UICorner") {

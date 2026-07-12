@@ -16,43 +16,51 @@ local Children = Fusion.Children;
 local peek = Fusion.peek;
 local Out = Fusion.Out;
 
+local CLOSE_ANIMATION_DURATION = 0.15
+
 local function DialogElement(
 	scope: Fusion.Scope,
 	props: {
 		headline: Fusion.UsedAs<string>,
 		[typeof(Fusion.Children)]: {}?,
 		buttons: Fusion.UsedAs<{
-			{ 
+			{
 				label: string,
 				onClick: () -> ()
-			}	
+			}
 		}>,
 		open: Fusion.UsedAs<boolean>
 	}
 )
 	local Tokens = DialogTokens();
-	
+
 	local screenWidth = scope:Value(Display.getDisplayWidth());
 	local screenHeight = scope:Value(Display.getDisplayHeight());
 	local currentGui: Fusion.Value<Frame | nil> = scope:Value(nil)
-	
+	local isFullyClosed = scope:Value(peek(props.open) == false)
+
 	table.insert(scope, Display.onDisplayChange(function()
 		screenWidth:set(Display.getDisplayWidth());
 		screenHeight:set(Display.getDisplayHeight());
 	end));
-	
-	--Run after GUI has been defined
+
 	scope:Observer(currentGui):onChange(function()
 		Fade.FadeOut(peek(currentGui), 0)
 		scope:Observer(props.open):onChange(function()
 			if peek(props.open) then
+				isFullyClosed:set(false)
 				Fade.FadeIn(peek(currentGui), .3)
 			else
 				Fade.FadeOut(peek(currentGui), .3)
+				task.delay(CLOSE_ANIMATION_DURATION, function()
+					if not peek(props.open) then
+						isFullyClosed:set(true)
+					end
+				end)
 			end
 		end)
 	end)
-	
+
 	return scope:New("Frame") {
 		Name = "Scrim",
 		Size = UDim2.fromScale(1, 1),
@@ -70,10 +78,15 @@ local function DialogElement(
 			end),
 			TweenInfo.new(.1)
 		),
-		Visible = props.open,
-		
+		Visible = scope:Computed(function(use)
+			return use(props.open) or not use(isFullyClosed)
+		end),
+
 		[Children] = {
-			showComputed(scope, props.open, function()
+			-- Modal blocker shown only during close animation
+			showComputed(scope, scope:Computed(function(use)
+				return not use(props.open) and not use(isFullyClosed)
+			end), function()
 				return scope:New("ImageButton") {
 					Modal = true,
 					Size = UDim2.fromScale(1, 1),
@@ -153,7 +166,6 @@ local function DialogElement(
 
 						[Children] = {
 							scope:New("UIListLayout") {
-								--Padding = UDim.new(0, 8),
 								FillDirection = Enum.FillDirection.Horizontal,
 								HorizontalAlignment = Enum.HorizontalAlignment.Right
 							},
