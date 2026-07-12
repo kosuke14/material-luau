@@ -166,9 +166,6 @@ local function TextField(scope: Fusion.Scope, props: {
                             isFocused:set(false)
                             props.value:set(textBox.Text)
                         end,
-                        [OnEvent "MouseButton1Click"] = function(textBox)
-                            setupTextBox(textBox)
-                        end,
 
                         [Children] = {
                             scope:New("UIPadding") {
