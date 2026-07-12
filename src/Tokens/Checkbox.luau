@@ -33,7 +33,6 @@ local function getTokens()
 		unselectedHoverOutlineColor = tokens.unselected.hover.outline.color,
 		disabledUnselectedIconColor = tokens.disabled.unselected.icon.color,
 		disabledSelectedIconColor = tokens.disabled.selected.icon.color,
-		disabledSelectedContainerColor = tokens.disabled.selected.container.color,
 		stateLayerSize = tokens["state-layer"].size,
 		stateLayerShape = tokens["state-layer"].shape,
 		iconSize = tokens.icon.size,
