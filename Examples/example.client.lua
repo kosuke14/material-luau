@@ -26,22 +26,7 @@ local textFieldValue = Scope:Value("");
 local filledTextFieldValue = Scope:Value("");
 local progressValue = Scope:Value(0.6);
 
--- Helper
-local function header(text, order)
-	Scope:New("TextLabel") {
-		Parent = ScrollingFrame,
-		Size = UDim2.new(1, 0, 0, 32),
-		BackgroundTransparency = 1,
-		Text = text,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		FontFace = Font.fromEnum(Enum.Font.GothamBold),
-		TextSize = 18,
-		TextColor3 = Color3.fromHex("#1C1B1F"),
-		LayoutOrder = order,
-	}
-end
-
--- Layout
+-- Layout (declared first so header can reference it)
 local ScrollingFrame = Scope:New("ScrollingFrame") {
 	Parent = ScreenGui,
 	Size = UDim2.fromScale(1, 1),
@@ -62,6 +47,21 @@ local ScrollingFrame = Scope:New("ScrollingFrame") {
 		},
 	}
 }
+
+-- Helper (after ScrollingFrame)
+local function header(text, order)
+	Scope:New("TextLabel") {
+		Parent = ScrollingFrame,
+		Size = UDim2.new(1, 0, 0, 32),
+		BackgroundTransparency = 1,
+		Text = text,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		FontFace = Font.fromEnum(Enum.Font.GothamBold),
+		TextSize = 18,
+		TextColor3 = Color3.fromHex("#1C1B1F"),
+		LayoutOrder = order,
+	}
+end
 
 ------------------------------------------------------------------------
 -- 1. Buttons
