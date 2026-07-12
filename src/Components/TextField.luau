@@ -6,7 +6,6 @@ local Icon = require(MaterialRoblox.Components.Icon);
 
 local Children = Fusion.Children;
 local OnEvent = Fusion.OnEvent;
-local Out = Fusion.Out;
 
 local function TextField(scope: Fusion.Scope, props: {
     placeholder: string?,
@@ -36,16 +35,11 @@ local function TextField(scope: Fusion.Scope, props: {
         return use(hasText) or use(isFocused)
     end)
 
-    local textBoxInstance = scope:Value(nil :: TextBox?)
-
-    scope:Observer(textBoxInstance):onChange(function()
-        local textBox = Fusion.peek(textBoxInstance)
-        if textBox then
-            table.insert(scope, textBox:GetPropertyChangedSignal("Text"):Connect(function()
-                props.value:set(textBox.Text)
-            end))
-        end
-    end)
+    local function setupTextBox(textBox: TextBox)
+        textBox:GetPropertyChangedSignal("Text"):Connect(function()
+            props.value:set(textBox.Text)
+        end)
+    end
 
     return scope:New("Frame") {
         Size = UDim2.new(1, 0, 0, Tokens.containerHeight + (props.supportingText and 24 or 0)),
@@ -164,13 +158,17 @@ local function TextField(scope: Fusion.Scope, props: {
                         TextColor3 = Tokens.inputColor,
                         TextXAlignment = Enum.TextXAlignment.Left,
 
-                        [OnEvent "Focused"] = function() isFocused:set(true) end,
+                        [OnEvent "Focused"] = function(textBox)
+                            isFocused:set(true)
+                            setupTextBox(textBox)
+                        end,
                         [OnEvent "FocusLost"] = function(textBox)
                             isFocused:set(false)
                             props.value:set(textBox.Text)
                         end,
-
-                        [Out "Text"] = textBoxInstance,
+                        [OnEvent "MouseButton1Click"] = function(textBox)
+                            setupTextBox(textBox)
+                        end,
 
                         [Children] = {
                             scope:New("UIPadding") {
