@@ -477,4 +477,19 @@ MaterialRoblox.Components.Menu(Scope, {
 	}
 }).Parent = ScreenGui
 
+------------------------------------------------------------------------
+-- Tooltip
+------------------------------------------------------------------------
+header("Tooltip", 2100)
+
+local tooltipButton = MaterialRoblox.Components.TextButton(Scope, {
+	text = "Hover for tooltip", onClick = function() end,
+})
+tooltipButton.Parent = ScrollingFrame
+
+MaterialRoblox.Components.Tooltip(Scope, {
+	text = "This is a Material Design 3 tooltip",
+	attachTo = tooltipButton,
+}).Parent = ScreenGui
+
 print("[MaterialLuau] Example loaded with dark/light mode support")

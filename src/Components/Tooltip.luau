@@ -11,19 +11,41 @@ local function Tooltip(scope: Fusion.Scope, props: {
 })
     local Tokens = TooltipTokens();
     local visible = scope:Value(false);
+    local position = scope:Value(UDim2.fromScale(0, 0));
 
-    table.insert(scope, props.attachTo.MouseEnter:Connect(function()
-        visible:set(true)
-    end))
+    -- Update position when visible
+    local function updatePosition()
+        local attachTo = props.attachTo
+        if not attachTo then return end
 
-    table.insert(scope, props.attachTo.MouseLeave:Connect(function()
-        visible:set(false)
-    end))
+        local absPos = attachTo.AbsolutePosition
+        local absSize = attachTo.AbsoluteSize
+
+        position:set(UDim2.new(
+            (absPos.X + absSize.X / 2) / workspace.CurrentCamera.ViewportSize.X,
+            0,
+            absPos.Y / workspace.CurrentCamera.ViewportSize.Y,
+            -8
+        ))
+    end
+
+    -- Connect to mouse events
+    if props.attachTo then
+        table.insert(scope, props.attachTo.MouseEnter:Connect(function()
+            updatePosition()
+            visible:set(true)
+        end))
+
+        table.insert(scope, props.attachTo.MouseLeave:Connect(function()
+            visible:set(false)
+        end))
+    end
 
     return scope:New("Frame") {
         Size = UDim2.fromScale(0, 0),
         AutomaticSize = Enum.AutomaticSize.XY,
         AnchorPoint = Vector2.new(0.5, 1),
+        Position = position,
         BackgroundColor3 = Tokens.containerColor,
         BorderSizePixel = 0,
         ZIndex = 10000,
