@@ -1,14 +1,6 @@
 {
     "name": "MaterialRoblox",
     "tree": {
-        "$className": "DataModel",
-        "ReplicatedStorage": {
-            "Packages": {
-                "$path": "Packages"
-            },
-            "MaterialRoblox": {
-                "$path": "src"
-            }
-        }
+        "$path": "src"
     }
 }
