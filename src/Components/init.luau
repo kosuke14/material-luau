@@ -6,6 +6,8 @@ local Ripple = require("@self/Ripple");
 local TabItem = require("@self/TabItem");
 local Tabs = require("@self/Tabs");
 local FilledTextButton = require("@self/Button/FilledTextButton");
+local FilledTonalTextButton = require("@self/Button/FilledTonalTextButton");
+local TextButton = require("@self/Button/TextButton");
 local Switch = require("@self/Switch");
 local SideSheet = require("@self/SideSheet");
 local IconButton = require("@self/IconButton");
@@ -35,6 +37,8 @@ return {
     TabItem = TabItem,
     Tabs = Tabs,
     FilledTextButton = FilledTextButton,
+    FilledTonalTextButton = FilledTonalTextButton,
+    TextButton = TextButton,
     Switch = Switch,
     SideSheet = SideSheet,
     IconButton = IconButton,
